@@ -1,0 +1,29 @@
+{
+  "name": "jsengine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "bundle": "./node_modules/esbuild-linux-64/bin/esbuild runtime/bundle/index.js --bundle --define:process.env.NODE_ENV=\\\"development\\\"",
+    "install": "npm install --no-bin-links",
+    "ui": "./node_modules/esbuild-linux-64/bin/esbuild test/calculator/index.jsx --bundle --platform=neutral --external:path --outfile=./test/test-calculator.js",
+    "ui1": "./node_modules/esbuild-linux-64/bin/esbuild test/react-router/index.jsx --bundle --external:path --outfile=./test/test-router.js",
+    "ui2": "node ./test/build/dev.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.14.43",
+    "esbuild-linux-64": "0.14.38",
+    "react": "^16.13.1",
+    "react-proxy": "^2.0.8",
+    "react-reconciler": "^0.25.1",
+    "react-router": "^6.3.0",
+    "text-encoding": "^0.7.0",
+    "util": "^0.12.4",
+    "whatwg-fetch": "^3.6.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

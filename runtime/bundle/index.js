@@ -1,0 +1,5 @@
+import './primordials'
+import './text-encoding'
+import './console'
+import './module/index'
+import './fetch'
