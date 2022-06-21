@@ -7,6 +7,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#if defined(_WIN32)
+#define SJSPATHSEP  "\\"
+#else
+#define SJSPATHSEP  "/"
+#endif
+
 void GetProgramDir (char* buf);
 
 #ifndef WIN32
