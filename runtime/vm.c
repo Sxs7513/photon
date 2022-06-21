@@ -139,7 +139,9 @@ void SJSRunMain(SJSRuntime *qrt, const char *filePath) {
     JSContext *ctx = qrt->ctx;
 
     if (filePath) {
-        SJSMakeEntryCommonJS(buf, &buf_len, filePath);
+        SJSBootstrap(ctx);
+
+        // SJSMakeEntryCommonJS(buf, &buf_len, filePath);
 
         // JSValue globalObj = JS_GetGlobalObject(ctx);
         // JSValue requireFunc = JS_GetPropertyStr(ctx, globalObj, "require");
@@ -147,21 +149,21 @@ void SJSRunMain(SJSRuntime *qrt, const char *filePath) {
         // JSValue ret = JS_Call(ctx, requireFunc, JS_UNDEFINED, 1, (JSValueConst *) &path);
 
         // buf = js_load_file(ctx, &buf_len, filePath);
-        JSValue func_val = JS_Eval(qrt->ctx,
-                            buf,
-                            buf_len,
-                            filePath,
-                            JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+        // JSValue func_val = JS_Eval(qrt->ctx,
+        //                     buf,
+        //                     buf_len,
+        //                     filePath,
+        //                     JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
 
         // JSModuleSetImportMeta(ctx, func_val, TRUE);
 
-        JSValue ret = JS_EvalFunction(ctx, func_val);
+        // JSValue ret = JS_EvalFunction(ctx, func_val);
         
-        if (JS_IsException(ret)) {
-            SJSDumpError(ctx);
-        }
+        // if (JS_IsException(ret)) {
+        //     SJSDumpError(ctx);
+        // }
 
-        JS_FreeValue(ctx, ret);
+        // JS_FreeValue(ctx, ret);
     }
 }
 

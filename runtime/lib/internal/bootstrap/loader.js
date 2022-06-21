@@ -28,7 +28,10 @@ ObjectDefineProperty(process, 'moduleLoadList', {
 });
 
 const loaderId = 'internal/bootstrap/loaders';
-const moduleIds = [];
+const moduleIds = [
+    'path',
+    'internal'
+];
 
 const getOwn = (target, property, receiver) => {
     return ObjectPrototypeHasOwnProperty(target, property) ?
@@ -131,4 +134,5 @@ function requireWithFallbackInDeps(request) {
     return nativeModuleRequire(request);
 };
 
+console.log('bootstrap loader execd')
 globalThis.NativeLoaderExports = loaderExports;

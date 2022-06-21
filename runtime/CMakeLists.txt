@@ -28,7 +28,7 @@ add_custom_command(OUTPUT bundle.js
 )
 add_custom_target(jsbundle ALL DEPENDS bundle.js)
 
-add_dependencies(runtime _runtime jsbundle)
+add_dependencies(runtime _runtime)
 
 target_link_libraries(runtime INTERFACE -lrt -lcrypto -lssl ${CMAKE_CURRENT_BINARY_DIR}/libruntime.a)
 

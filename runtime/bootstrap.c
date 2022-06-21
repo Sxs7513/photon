@@ -1,4 +1,6 @@
-#include <sjs.h>
+#include "sjs.h"
+#include "utils.h"
+#include <stdlib.h>
 
 void SJSBootStrapGlobals(JSContext *ctx, char *filepath) {
     uint8_t *buf;
@@ -16,11 +18,11 @@ void SJSBootStrapGlobals(JSContext *ctx, char *filepath) {
     JS_FreeValue(ctx, ret);
 };
 
-static void SJSWrapFunction (char* buf, char* content, size_t pbuf_len, char** params, size_t paramsv, JSValue* args, size_t argv) {
+static void SJSWrapFunction (char* buf, char* content, size_t* pbuf_len, char** params, size_t paramsv) {
     strcat(buf, "(function (");
     int i;
     for (i = 0; i < paramsv; i++) {
-        strcat[buf, params[i]];
+        strcat(buf, params[i]);
         if (i != paramsv - 1) {
             strcat(buf, ",");
         }
@@ -32,8 +34,8 @@ static void SJSWrapFunction (char* buf, char* content, size_t pbuf_len, char** p
     *pbuf_len = strlen(buf);
 }
 
-static void SJSExecuteBootStrapper (JSContext* ctx, char* path, char** params, size_t paramsv, JSValue* args, size_t argv) {
-    char fullPath[MAX_PATH] = {0};
+static void SJSExecuteBootStrapper (JSContext* ctx, char* path, char** params, size_t paramsv, JSValue* argc, size_t argv) {
+    char fullPath[PATH_MAX] = {0};
     size_t buflen;
     size_t newbuflen;
 
@@ -44,20 +46,34 @@ static void SJSExecuteBootStrapper (JSContext* ctx, char* path, char** params, s
     strcat(fullPath, path);
 
     char* buf = js_load_file(ctx, &buflen, fullPath);
-    char newbuf[buflen + 1000] = {0};
-    SJSWrapFunction(newbuf, buf, newbuflen, params, paramsv, paramsv, args);
+    char newbuf[buflen + 1000];
+    newbuf[0] = '\0';
+    SJSWrapFunction(newbuf, buf, &newbuflen, params, paramsv);
 
     JSValue func_val = JS_Eval(
-        qrt->ctx,
+        ctx,
         newbuf,
         newbuflen,
         path,
+        JS_EVAL_TYPE_GLOBAL
     );
-
-    JS_Call(ctx, )
+    JSValue globalObj = JS_GetGlobalObject(ctx);
+    JS_Call(ctx, func_val, globalObj, argc, argv);
+    JS_FreeValue(ctx, globalObj);
+    JS_FreeValue(ctx, func_val);
+    free(buf);
 };
 
 void SJSBootstrap (JSContext* ctx) {
-    char* loaderPath = "internal/bootstrap/loader.js"
-    SJSExecuteBootStrapper(ctx, loaderPath, NULL, 0, NULL, 0);
+    SJSExecuteBootStrapper(ctx, "internal/bootstrap/loader.js", NULL, 0, NULL, 0);
+
+    JSValue globalObj = JS_GetGlobalObject(ctx);
+    JSValue bootstrapLoader = JS_GetPropertyStr(ctx, globalObj, "NativeLoaderExports");
+    JSValue requireFunc = JS_GetPropertyStr(ctx, bootstrapLoader, "require");
+    JSValue NativeModule = JS_GetPropertyStr(ctx, bootstrapLoader, "NativeModule");
+
+    JS_FreeValue(ctx, globalObj);
+    JS_FreeValue(ctx, requireFunc);
+    JS_FreeValue(ctx, NativeModule);
+    JS_FreeValue(ctx, bootstrapLoader);
 }

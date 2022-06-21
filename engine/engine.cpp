@@ -78,6 +78,7 @@ void* StartJSRuntime (int argc, char *argv[]) {
     SJSRunMain(qrt, absolutePath);
     SJSRun(qrt);
 
+    free(absolutePath);
     SJSFreeRuntime(qrt);
     SJSClearJSApi();
     printf("js vm End \n");
