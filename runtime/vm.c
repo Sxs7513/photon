@@ -15,12 +15,15 @@ static JSValue SJSEvalModule(JSContext *ctx, JSValueConst this_val, int argc, JS
         fileName,
         JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY
     );
-    JSModuleSetImportMeta(ctx, func_val, TRUE);
+    if (JS_IsException(func_val)) {
+        SJSDumpError(ctx);
+        goto done;
+    }
+    JSModuleSetImportMeta(ctx, func_val, FALSE);
 
     JSValue ret = JS_EvalFunction(ctx, func_val);
-    if (JS_IsException(ret)) {
-        SJSDumpError(ctx);
-    }
+
+done:
     JS_FreeCString(ctx, content);
     JS_FreeCString(ctx, fileName);
     return JS_UNDEFINED;

@@ -48,9 +48,6 @@ const { NativeModule } = require('internal/bootstrap/loaders');
 const fs = require('fs');
 const path = require('path');
 const { sep } = path;
-
-const fs = globalThis.SJSJSBridge.fs
-
 const { validateString } = require('internal/validators');
 
 const {
@@ -58,6 +55,11 @@ const {
   CHAR_BACKWARD_SLASH,
   CHAR_COLON
 } = require('internal/constants');
+
+const {
+  loadNativeModule,
+  makeRequireFunction,
+} = require('internal/modules/helpers');
 
 const isWindows = process.platform === 'win32';
 
@@ -86,9 +88,14 @@ Module._extensions = ObjectCreate(null);
 let modulePaths = [];
 Module.globalPaths = [];
 
-let wrap = function(script) {
-    return Module.wrapper[0] + script + Module.wrapper[1];
-};
+function safeWrapAndExec (moduleObj, requireFunc, dirname, filename, content) {
+	const tempArgs = [moduleObj.exports, requireFunc, moduleObj, filename, dirname]
+	const key = `__SJS_MODULE_WRAPPER_${idx++}`
+	globalThis[key] = tempArgs
+    content = `(function loader (exports, require, module, __filename, __dirname) {${content}})(...globalThis["${key}"])`
+    __NativeEvalModule(content, filename)
+	delete globalThis[key]
+}
   
 const wrapper = [
     '(function (exports, require, module, __filename, __dirname) { ',
@@ -129,22 +136,57 @@ const CircularRequirePrototypeWarningProxy = new Proxy({}, {
     }
 });
 
-function toRealPath(requestPath) {
-  return fs.realpathSync(requestPath);
+function findLongestRegisteredExtension(filename) {
+  const name = path.basename(filename);
+  let currentExtension;
+  let index;
+  let startIndex = 0;
+  while ((index = StringPrototypeIndexOf(name, '.', startIndex)) !== -1) {
+    startIndex = index + 1;
+    if (index === 0) continue; // Skip dotfiles like .gitignore
+    currentExtension = StringPrototypeSlice(name, index);
+    if (Module._extensions[currentExtension]) return currentExtension;
+  }
+  return '.js';
 }
+
+function toRealPath(requestPath) {
+  return fs.realPathSync(requestPath);
+}
+
+function tryFile(requestPath, isMain) {
+  const [stat, err] = fs.statSync(requestPath);
+  if (!stat.isFile()) return;
+  return toRealPath(requestPath);
+}
+
+function tryExtensions(p, exts, isMain) {
+  for (let i = 0; i < exts.length; i++) {
+    const filename = tryFile(p + exts[i], isMain);
+
+    if (filename) {
+      return filename;
+    }
+  }
+  return false;
+}
+
+Module.prototype.load = function(filename) {
+  debug('load %j for module %j', filename, this.id);
+
+  this.filename = filename;
+
+  const extension = findLongestRegisteredExtension(filename);
+
+  Module._extensions[extension](this, filename);
+  this.loaded = true;
+};
 
 Module._load = function(request, parent, isMain) {
     const filename = Module._resolveFilename(request, parent, isMain);
     const cachedModule = Module._cache[filename];
     if (cachedModule !== undefined) {
-      if (!cachedModule.loaded) {
-        const parseCachedModule = cjsParseCache.get(cachedModule);
-        if (!parseCachedModule || parseCachedModule.loaded)
-          return getExportsForCircularRequire(cachedModule);
-        parseCachedModule.loaded = true;
-      } else {
-        return cachedModule.exports;
-      }
+      return cachedModule.exports;
     }
   
     const mod = loadNativeModule(filename, request);
@@ -184,25 +226,14 @@ Module._resolveFilename = function(request, parent, isMain, options) {
       return request;
     }
   
-    let paths = Module._resolveLookupPaths(request, parent);
-  
+    const paths = Module._resolveLookupPaths(request, parent);
     const filename = Module._findPath(request, paths, isMain, false);
     if (filename) return filename;
-    const requireStack = [];
-    for (let cursor = parent;
-      cursor;
-      cursor = moduleParentCache.get(cursor)) {
-      ArrayPrototypePush(requireStack, cursor.filename || cursor.id);
-    }
-    let message = `Cannot find module '${request}'`;
-    if (requireStack.length > 0) {
-      message = message + '\nRequire stack:\n- ' +
-                ArrayPrototypeJoin(requireStack, '\n- ');
-    }
+
+    const message = `Cannot find module '${request}'`;
     // eslint-disable-next-line no-restricted-syntax
     const err = new Error(message);
     err.code = 'MODULE_NOT_FOUND';
-    err.requireStack = requireStack;
     throw err;
 };
 
@@ -299,21 +330,7 @@ Module._findPath = function(request, paths, isMain) {
     const [fstat, err] = fs.statSync(basePath)
     if (!trailingSlash) {
       if (fstat.isFile()) {  // File.
-        if (!isMain) {
-          filename = toRealPath(basePath);
-        } else if (preserveSymlinksMain) {
-          // For the main module, we use the preserveSymlinksMain flag instead
-          // mainly for backward compatibility, as the preserveSymlinks flag
-          // historically has not applied to the main module.  Most likely this
-          // was intended to keep .bin/ binaries working, as following those
-          // symlinks is usually required for the imports in the corresponding
-          // files to resolve; that said, in some use cases following symlinks
-          // causes bigger problems which is why the preserveSymlinksMain option
-          // is needed.
-          filename = path.resolve(basePath);
-        } else {
-          filename = toRealPath(basePath);
-        }
+        filename = toRealPath(basePath);
       }
 
       if (!filename) {
@@ -324,11 +341,11 @@ Module._findPath = function(request, paths, isMain) {
       }
     }
 
-    if (!filename && rc === 1) {  // Directory.
+    if (!filename && fstat.isDirectory()) {  // Directory.
       // try it with each of the extensions at "index"
       if (exts === undefined)
         exts = ObjectKeys(Module._extensions);
-      filename = tryPackage(basePath, exts, isMain, request);
+      filename = tryExtensions(path.resolve(requestPath, 'index'), exts, isMain);
     }
 
     if (filename) {
@@ -339,3 +356,23 @@ Module._findPath = function(request, paths, isMain) {
 
   return false;
 };
+
+Module._extensions['.js'] = function(module, filename) {
+  const content = fs.readFileSync(filename);
+
+  module._compile(content, filename);
+};
+
+Module.prototype._compile = function(content, filename) {
+  let redirects;
+
+  const dirname = path.dirname(filename);
+  const require = makeRequireFunction(this, redirects);
+  const module = this;
+
+  safeWrapAndExec (module, require, dirname, filename, content)
+};
+
+module.exports = {
+  Module
+}

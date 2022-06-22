@@ -1,5 +1,21 @@
 #include "sjs.h"
 
+static int SJSArgc = 0;
+static char **SJSArgv = NULL;
+
+void SJSSetupArgs (int a, char **b) {
+    SJSArgc = a;
+    SJSArgv = b;
+};
+
+JSValue SJSGetArgs(JSContext *ctx) {
+    JSValue args = JS_NewArray(ctx);
+    for (int i = 0; i < SJSArgc; i++) {
+        JS_SetPropertyUint32(ctx, args, i, JS_NewString(ctx, SJSArgv[i]));
+    }
+    return args;
+}
+
 static JSValue SJSGetPwd(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char buf[PATH_MAX];
     getcwd(buf, sizeof(buf));
@@ -39,6 +55,7 @@ static const JSCFunctionListEntry ProcessFuncs[] = {
     SJS_CFUNC_DEF("cwd", 1, SJSGetPwd),
     SJS_CGETSET_DEF("env", SJSGetEnv, NULL),
     SJS_CGETSET_DEF("execPath", SJSGetExecPath, NULL),
+    SJS_CGETSET_DEF("args", SJSGetArgs, NULL),
 };
 
 // static const JSCFunctionListEntry process[] = {

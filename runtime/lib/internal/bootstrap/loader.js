@@ -29,9 +29,25 @@ ObjectDefineProperty(process, 'moduleLoadList', {
 
 const loaderId = 'internal/bootstrap/loaders';
 const moduleIds = [
+    'fs',
     'path',
-    'internal'
+    'internal/modules/helper',
+    'internal/modules/loader',
+    'internal/constants',
+    'internal/primordials',
+    'internal/validators',
 ];
+
+let idx = 0;
+
+function safeWrapAndExec (moduleObj, requireFunc, dirname, filename, content) {
+	const tempArgs = [moduleObj.exports, requireFunc, moduleObj, filename, dirname]
+	const key = `__SJS_MODULE_WRAPPER_${idx++}`
+	globalThis[key] = tempArgs
+    content = `(function loader (exports, require, module, __filename, __dirname) {${content}})(...globalThis["${key}"])`
+    __NativeEvalModule(content, filename)
+	delete globalThis[key]
+}
 
 const getOwn = (target, property, receiver) => {
     return ObjectPrototypeHasOwnProperty(target, property) ?
@@ -39,14 +55,16 @@ const getOwn = (target, property, receiver) => {
         undefined;
 };
 
+const isWindows = process.platform === 'win32';
+const sep = isWindows ? '\\' : '/';
+const fs = globalThis.SJSJSBridge.fs;
+
 class NativeModule {
     /**
      * A map from the module IDs to the module instances.
      * @type {Map<string, NativeModule>}
      */
-    static map = new SafeMap(
-        ArrayPrototypeMap(moduleIds, (id) => [id, new NativeModule(id)])
-    );
+    static map;
 
     constructor(id) {
         this.filename = `${id}.js`;
@@ -96,11 +114,18 @@ class NativeModule {
         this.loading = true;
 
         try {
-            const requireFn = StringPrototypeStartsWith(this.id, 'internal/deps/') ?
-                requireWithFallbackInDeps : nativeModuleRequire;
+            let filename;
+            const prefixDir = process.execPath
+            const basePath = `${prefixDir}${sep}lib${sep}${id}`
+            let [fstat, err] = fs.statSync(`${basePath}.js`)
+            if (fstat?.mode & fs.S_IFREG) {
+                [filename, err] = fs.realPathSync(`${basePath}.js`);
+            }
+            const content = fs.readFileSync(filename)
 
-            const fn = compileFunction(id);
-            fn(this.exports, requireFn, this, process, internalBinding, primordials);
+            const requireFn = nativeModuleRequire;
+
+            safeWrapAndExec (this, requireFn, "", id, content)
 
             this.loaded = true;
         } finally {
@@ -111,6 +136,10 @@ class NativeModule {
         return this.exports;
     }
 };
+
+NativeModule.map = new SafeMap(
+    ArrayPrototypeMap(moduleIds, (id) => [id, new NativeModule(id)])
+)
 
 const loaderExports = {
     NativeModule,
@@ -127,12 +156,5 @@ function nativeModuleRequire(id) {
     return mod.compileForInternalLoader();
 };
 
-function requireWithFallbackInDeps(request) {
-    if (!NativeModule.map.has(request)) {
-        request = `internal/deps/${request}`;
-    }
-    return nativeModuleRequire(request);
-};
-
 console.log('bootstrap loader execd')
-globalThis.NativeLoaderExports = loaderExports;
+return loaderExports;

@@ -52,7 +52,9 @@ SJSRuntime* GetSJSInstance () {
 }
 
 void* StartJSRuntime (int argc, char *argv[]) {
-    printf("js vm Start\n");\
+    printf("js vm Start\n");
+
+    SJSSetupArgs (argc, argv);
 
     char* filePath = argv[1];
 

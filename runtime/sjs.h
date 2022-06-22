@@ -86,6 +86,8 @@ void JSFSInit(SJSRuntime* qrt, JSValue ns);
 
 void SJSInjectBuiltInLibPath(JSContext *ctx, char* p);
 
+void SJSSetupArgs (int a, char **b);
+
 #define SJS_UVCONST(x) JS_PROP_INT32_DEF(#x, UV_ ## x, JS_PROP_ENUMERABLE)
 #define SJS_CONST(x) JS_PROP_INT32_DEF(#x, x, JS_PROP_ENUMERABLE)
 #define SJS_CONST2(name, val) JS_PROP_INT32_DEF(name, val, JS_PROP_ENUMERABLE)
