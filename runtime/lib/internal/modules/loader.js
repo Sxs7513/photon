@@ -45,10 +45,19 @@ const {
 } = primordials;
 
 const { NativeModule } = require('internal/bootstrap/loaders');
+const fs = require('fs');
 const path = require('path');
 const { sep } = path;
 
+const fs = globalThis.SJSJSBridge.fs
+
 const { validateString } = require('internal/validators');
+
+const {
+  CHAR_FORWARD_SLASH,
+  CHAR_BACKWARD_SLASH,
+  CHAR_COLON
+} = require('internal/constants');
 
 const isWindows = process.platform === 'win32';
 
@@ -120,8 +129,12 @@ const CircularRequirePrototypeWarningProxy = new Proxy({}, {
     }
 });
 
-Module._load = function(request, isMain) {
-    const filename = Module._resolveFilename(request, isMain);
+function toRealPath(requestPath) {
+  return fs.realpathSync(requestPath);
+}
+
+Module._load = function(request, parent, isMain) {
+    const filename = Module._resolveFilename(request, parent, isMain);
     const cachedModule = Module._cache[filename];
     if (cachedModule !== undefined) {
       if (!cachedModule.loaded) {
@@ -166,76 +179,13 @@ Module._load = function(request, isMain) {
     return module.exports;
 };
 
-Module._resolveFilename = function(request, isMain, options) {
+Module._resolveFilename = function(request, parent, isMain, options) {
     if (NativeModule.canBeRequiredByUsers(request)) {
       return request;
     }
   
-    let paths;
+    let paths = Module._resolveLookupPaths(request, parent);
   
-    if (typeof options === 'object' && options !== null) {
-      if (ArrayIsArray(options.paths)) {
-        const isRelative = StringPrototypeStartsWith(request, './') ||
-            StringPrototypeStartsWith(request, '../') ||
-            ((isWindows && StringPrototypeStartsWith(request, '.\\')) ||
-            StringPrototypeStartsWith(request, '..\\'));
-  
-        if (isRelative) {
-          paths = options.paths;
-        } else {
-          const fakeParent = new Module('', null);
-  
-          paths = [];
-  
-          for (let i = 0; i < options.paths.length; i++) {
-            const path = options.paths[i];
-            fakeParent.paths = Module._nodeModulePaths(path);
-            const lookupPaths = Module._resolveLookupPaths(request, fakeParent);
-  
-            for (let j = 0; j < lookupPaths.length; j++) {
-              if (!ArrayPrototypeIncludes(paths, lookupPaths[j]))
-                ArrayPrototypePush(paths, lookupPaths[j]);
-            }
-          }
-        }
-      } else if (options.paths === undefined) {
-        paths = Module._resolveLookupPaths(request, parent);
-      } else {
-        throw new ERR_INVALID_ARG_VALUE('options.paths', options.paths);
-      }
-    } else {
-      paths = Module._resolveLookupPaths(request, parent);
-    }
-  
-    if (parent?.filename) {
-      if (request[0] === '#') {
-        const pkg = readPackageScope(parent.filename) || {};
-        if (pkg.data?.imports != null) {
-          try {
-            return finalizeEsmResolution(
-              packageImportsResolve(request, pathToFileURL(parent.filename),
-                                    cjsConditions), parent.filename,
-              pkg.path);
-          } catch (e) {
-            if (e.code === 'ERR_MODULE_NOT_FOUND')
-              throw createEsmNotFoundErr(request);
-            throw e;
-          }
-        }
-      }
-    }
-  
-    // Try module self resolution first
-    const parentPath = trySelfParentPath(parent);
-    const selfResolved = trySelf(parentPath, request);
-    if (selfResolved) {
-      const cacheKey = request + '\x00' +
-           (paths.length === 1 ? paths[0] : ArrayPrototypeJoin(paths, '\x00'));
-      Module._pathCache[cacheKey] = selfResolved;
-      return selfResolved;
-    }
-  
-    // Look up the filename first, since that's the cache key.
     const filename = Module._findPath(request, paths, isMain, false);
     if (filename) return filename;
     const requireStack = [];
@@ -254,4 +204,138 @@ Module._resolveFilename = function(request, isMain, options) {
     err.code = 'MODULE_NOT_FOUND';
     err.requireStack = requireStack;
     throw err;
+};
+
+Module._resolveLookupPaths = function(request, parent) {
+  if (NativeModule.canBeRequiredByUsers(request)) {
+    debug('looking for %j in []', request);
+    return null;
+  }
+
+  if (StringPrototypeCharAt(request, 0) !== '.' ||
+      (request.length > 1 &&
+      StringPrototypeCharAt(request, 1) !== '.' &&
+      StringPrototypeCharAt(request, 1) !== '/' &&
+      (!isWindows || StringPrototypeCharAt(request, 1) !== '\\'))) {
+
+    let paths = modulePaths;
+    if (parent?.paths?.length) {
+      paths = ArrayPrototypeConcat(parent.paths, paths);
+    }
+
+    debug('looking for %j in %j', request, paths);
+    return paths.length > 0 ? paths : null;
+  }
+
+  if (!parent || !parent.id || !parent.filename) {
+    const mainPaths = ['.'];
+
+    debug('looking for %j in %j', request, mainPaths);
+    return mainPaths;
+  }
+
+  debug('RELATIVE: requested: %s from parent.id %s', request, parent.id);
+
+  const parentDir = [path.dirname(parent.filename)];
+  debug('looking for %j', parentDir);
+  return parentDir;
+};
+
+Module._initPaths = function() {
+  const homeDir = isWindows ? process.env.USERPROFILE : safeGetenv('HOME');
+  const nodePath = isWindows ? process.env.NODE_PATH : safeGetenv('NODE_PATH');
+
+  const prefixDir = process.execPath
+
+  const paths = [path.resolve(prefixDir, 'lib')];
+
+  // if (homeDir) {
+  //   ArrayPrototypeUnshift(paths, path.resolve(homeDir, '.node_libraries'));
+  //   ArrayPrototypeUnshift(paths, path.resolve(homeDir, '.node_modules'));
+  // }
+
+  // if (nodePath) {
+  //   ArrayPrototypeUnshiftApply(paths, ArrayPrototypeFilter(
+  //     StringPrototypeSplit(nodePath, path.delimiter),
+  //     Boolean
+  //   ));
+  // }
+
+  modulePaths = paths;
+
+  // Clone as a shallow copy, for introspection.
+  Module.globalPaths = ArrayPrototypeSlice(modulePaths);
+};
+
+const trailingSlashRegex = /(?:^|\/)\.?\.$/;
+Module._findPath = function(request, paths, isMain) {
+  const absoluteRequest = path.isAbsolute(request);
+  if (absoluteRequest) {
+    paths = [''];
+  } else if (!paths || paths.length === 0) {
+    return false;
+  }
+
+  const cacheKey = request + '\x00' + ArrayPrototypeJoin(paths, '\x00');
+  const entry = Module._pathCache[cacheKey];
+  if (entry)
+    return entry;
+
+  let exts;
+  let trailingSlash = request.length > 0 &&
+    StringPrototypeCharCodeAt(request, request.length - 1) ===
+    CHAR_FORWARD_SLASH;
+  if (!trailingSlash) {
+    trailingSlash = RegExpPrototypeTest(trailingSlashRegex, request);
+  }
+
+  // For each path
+  for (let i = 0; i < paths.length; i++) {
+    const curPath = paths[i];
+
+    const basePath = path.resolve(curPath, request);
+    let filename;
+
+    const [fstat, err] = fs.statSync(basePath)
+    if (!trailingSlash) {
+      if (fstat.isFile()) {  // File.
+        if (!isMain) {
+          filename = toRealPath(basePath);
+        } else if (preserveSymlinksMain) {
+          // For the main module, we use the preserveSymlinksMain flag instead
+          // mainly for backward compatibility, as the preserveSymlinks flag
+          // historically has not applied to the main module.  Most likely this
+          // was intended to keep .bin/ binaries working, as following those
+          // symlinks is usually required for the imports in the corresponding
+          // files to resolve; that said, in some use cases following symlinks
+          // causes bigger problems which is why the preserveSymlinksMain option
+          // is needed.
+          filename = path.resolve(basePath);
+        } else {
+          filename = toRealPath(basePath);
+        }
+      }
+
+      if (!filename) {
+        // Try it with each of the extensions
+        if (exts === undefined)
+          exts = ObjectKeys(Module._extensions);
+        filename = tryExtensions(basePath, exts, isMain);
+      }
+    }
+
+    if (!filename && rc === 1) {  // Directory.
+      // try it with each of the extensions at "index"
+      if (exts === undefined)
+        exts = ObjectKeys(Module._extensions);
+      filename = tryPackage(basePath, exts, isMain, request);
+    }
+
+    if (filename) {
+      Module._pathCache[cacheKey] = filename;
+      return filename;
+    }
+  }
+
+  return false;
 };
