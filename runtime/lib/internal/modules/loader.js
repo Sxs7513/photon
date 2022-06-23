@@ -155,7 +155,7 @@ function toRealPath(requestPath) {
 }
 
 function tryFile(requestPath, isMain) {
-  const [stat, err] = fs.statSync(requestPath);
+  const stat = fs.statSync(requestPath);
   if (!stat.isFile()) return;
   return toRealPath(requestPath);
 }
@@ -327,7 +327,7 @@ Module._findPath = function(request, paths, isMain) {
     const basePath = path.resolve(curPath, request);
     let filename;
 
-    const [fstat, err] = fs.statSync(basePath)
+    const fstat = fs.statSync(basePath)
     if (!trailingSlash) {
       if (fstat.isFile()) {  // File.
         filename = toRealPath(basePath);
