@@ -29,6 +29,7 @@ ObjectDefineProperty(process, 'moduleLoadList', {
 
 const loaderId = 'internal/bootstrap/loaders';
 const moduleIds = [
+    'os',
     'fs',
     'path',
     'internal/modules/helper',
@@ -36,6 +37,8 @@ const moduleIds = [
     'internal/constants',
     'internal/primordials',
     'internal/validators',
+    'internal/util/debuglog',
+    'internal/util/types',
 ];
 
 let idx = 0;

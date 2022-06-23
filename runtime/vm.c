@@ -22,10 +22,14 @@ static JSValue SJSEvalModule(JSContext *ctx, JSValueConst this_val, int argc, JS
     JSModuleSetImportMeta(ctx, func_val, FALSE);
 
     JSValue ret = JS_EvalFunction(ctx, func_val);
+    if (JS_IsException(ret)) {
+        SJSDumpError(ctx);
+    }
 
 done:
     JS_FreeCString(ctx, content);
     JS_FreeCString(ctx, fileName);
+    JS_FreeValue(ctx, ret);
     return JS_UNDEFINED;
 };
 

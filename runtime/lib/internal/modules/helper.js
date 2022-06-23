@@ -1,4 +1,5 @@
 const { NativeModule } = require('internal/bootstrap/loaders');
+const { debugLog: debug } = require('internal/util/debuglog');
 
 function makeRequireFunction(mod) {
     const Module = mod.constructor;
@@ -8,14 +9,12 @@ function makeRequireFunction(mod) {
     };
   
     function resolve(request, options) {
-      validateString(request, 'request');
       return Module._resolveFilename(request, mod, false, options);
     }
   
     require.resolve = resolve;
   
     function paths(request) {
-      validateString(request, 'request');
       return Module._resolveLookupPaths(request, mod);
     }
   

@@ -45,10 +45,9 @@ const {
 } = primordials;
 
 const { NativeModule } = require('internal/bootstrap/loaders');
+const { debugLog: debug } = require('internal/util/debuglog');
 const fs = require('fs');
 const path = require('path');
-const { sep } = path;
-const { validateString } = require('internal/validators');
 
 const {
   CHAR_FORWARD_SLASH,
@@ -59,7 +58,7 @@ const {
 const {
   loadNativeModule,
   makeRequireFunction,
-} = require('internal/modules/helpers');
+} = require('internal/modules/helper');
 
 const isWindows = process.platform === 'win32';
 
@@ -88,6 +87,8 @@ Module._extensions = ObjectCreate(null);
 let modulePaths = [];
 Module.globalPaths = [];
 
+let idx = 0;
+
 function safeWrapAndExec (moduleObj, requireFunc, dirname, filename, content) {
 	const tempArgs = [moduleObj.exports, requireFunc, moduleObj, filename, dirname]
 	const key = `__SJS_MODULE_WRAPPER_${idx++}`
@@ -96,11 +97,6 @@ function safeWrapAndExec (moduleObj, requireFunc, dirname, filename, content) {
     __NativeEvalModule(content, filename)
 	delete globalThis[key]
 }
-  
-const wrapper = [
-    '(function (exports, require, module, __filename, __dirname) { ',
-    '\n});',
-];
 
 function getModuleParent() {
     return moduleParentCache.get(this);
@@ -211,7 +207,6 @@ Module._load = function(request, parent, isMain) {
       if (threw) {
         delete Module._cache[filename];
       } else if (module.exports &&
-                 !isProxy(module.exports) &&
                  ObjectGetPrototypeOf(module.exports) ===
                    CircularRequirePrototypeWarningProxy) {
         ObjectSetPrototypeOf(module.exports, ObjectPrototype);
@@ -273,24 +268,9 @@ Module._resolveLookupPaths = function(request, parent) {
 };
 
 Module._initPaths = function() {
-  const homeDir = isWindows ? process.env.USERPROFILE : safeGetenv('HOME');
-  const nodePath = isWindows ? process.env.NODE_PATH : safeGetenv('NODE_PATH');
-
   const prefixDir = process.execPath
 
   const paths = [path.resolve(prefixDir, 'lib')];
-
-  // if (homeDir) {
-  //   ArrayPrototypeUnshift(paths, path.resolve(homeDir, '.node_libraries'));
-  //   ArrayPrototypeUnshift(paths, path.resolve(homeDir, '.node_modules'));
-  // }
-
-  // if (nodePath) {
-  //   ArrayPrototypeUnshiftApply(paths, ArrayPrototypeFilter(
-  //     StringPrototypeSplit(nodePath, path.delimiter),
-  //     Boolean
-  //   ));
-  // }
 
   modulePaths = paths;
 
@@ -364,13 +344,19 @@ Module._extensions['.js'] = function(module, filename) {
 };
 
 Module.prototype._compile = function(content, filename) {
-  let redirects;
-
   const dirname = path.dirname(filename);
-  const require = makeRequireFunction(this, redirects);
+  const require = makeRequireFunction(this);
   const module = this;
 
   safeWrapAndExec (module, require, dirname, filename, content)
+};
+
+Module.prototype.require = function(id) {
+  if (id === '') {
+    throw new Error('id', id,
+                                    'must be a non-empty string');
+  }
+  return Module._load(id, this, /* isMain */ false);
 };
 
 module.exports = {

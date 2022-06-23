@@ -55,7 +55,7 @@ static const JSCFunctionListEntry ProcessFuncs[] = {
     SJS_CFUNC_DEF("cwd", 1, SJSGetPwd),
     SJS_CGETSET_DEF("env", SJSGetEnv, NULL),
     SJS_CGETSET_DEF("execPath", SJSGetExecPath, NULL),
-    SJS_CGETSET_DEF("args", SJSGetArgs, NULL),
+    SJS_CGETSET_DEF("argv", SJSGetArgs, NULL),
 };
 
 // static const JSCFunctionListEntry process[] = {

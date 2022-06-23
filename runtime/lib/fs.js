@@ -6,31 +6,31 @@ class Stat {
     }
 
     isFile () {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFREG
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFREG
     }
 
     isDirectory() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFDIR
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFDIR
     }
 
     isCharacterDevice() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFCHR
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFCHR
     }
 
     isBlockDevice() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFBLK
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFBLK
     }
 
     isFIFO() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFIFO
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFIFO
     }
 
     isSocket() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFSOCK
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFSOCK
     }
 
     isSymbolicLink() {
-        return this.stat?.mode & nativefs.S_IFMT === nativefs.S_IFLNK
+        return (this.stat?.mode & nativefs.S_IFMT) === nativefs.S_IFLNK
     }
 
     get dev () {
@@ -88,25 +88,16 @@ class Stat {
 
 async function statAsync () {
     const [stat, err] = await nativefs.statSync(path);
-    if (err) {
-        throw err
-    }
-    return stat
+    return new Stat(stat)
 }
 
-function statsync (path) {
+function statSync (path) {
     const [stat, err] = nativefs.statSync(path);
-    if (err) {
-        throw err
-    }
-    return stat
+    return new Stat(stat)
 }
 
 function realPathSync (path) {
     const [filename, err] = nativefs.realPathSync(path)
-    if (err) {
-        throw err
-    }
     return filename
 }
 
