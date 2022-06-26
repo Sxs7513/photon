@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <QtCore/QObject>
+#include <QDebug>
 
 static JSClassID ContainerClassID;
 
@@ -15,13 +16,26 @@ static JSValue NativeCompAppendChild(JSContext *ctx, JSValueConst this_val, int 
         COMP_REF* child = (COMP_REF*)JS_GetOpaque3(argv[0]);
         COMP_REF* parent = (COMP_REF*)JS_GetOpaque(this_val, ContainerClassID);
         ((SMainWindow*)(parent->comp))->setCentralWidget((QWidget*)(child->comp));
-        printf("container %s append child %s \n", parent->uid, child->uid);
+        qDebug("container %s append child %s", parent->uid, child->uid);
     }
+    return JS_UNDEFINED;
 };
+
+static JSValue NativeCompSetTitle (JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    if (argc >= 1 && JS_IsString(argv[0])) {
+        const char* title = JS_ToCString(ctx, argv[0]);
+        COMP_REF* s = (COMP_REF*)JS_GetOpaque(this_val, ContainerClassID);
+        ((SMainWindow*)(s->comp))->setWindowTitle(QString(title));
+        JS_FreeValue(ctx, argv[0]);
+        qDebug("Container %s setTitle", s->uid);
+    }
+    return JS_UNDEFINED;
+}
 
 static const JSCFunctionListEntry ComponentProtoFuncs[] = {
     WRAPPED_JS_METHODS_REGISTER
     SJS_CFUNC_DEF("appendChild", 0, NativeCompAppendChild),
+    SJS_CFUNC_DEF("setTitle", 0, NativeCompSetTitle),
 };
 
 static const JSCFunctionListEntry ComponentClassFuncs[] = {

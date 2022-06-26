@@ -1,7 +1,18 @@
 import { getUid, setStyle } from '../config'
+import { isValidUrl } from '../../utils/helpers';
 
 const bridge = globalThis.SJSJSBridge;
 const NativeImage = bridge.NativeRender.NativeComponents.Image
+
+async function getImageBinary(url) {
+    const resp = await fetch(url, {
+        headers: {
+            "Content-Type": "application/octet-stream"
+        }
+    });
+    const imageBuffer = await resp.arrayBuffer();
+    return imageBuffer;
+}
 
 function setImageProps(comp, newProps, oldProps) {
     const setter = {
@@ -14,7 +25,13 @@ function setImageProps(comp, newProps, oldProps) {
         },
         set src(url) {
             if (url && url !== oldProps.url) {
-                comp.setImage(url);
+                if (!isValidUrl(url)) {
+                    comp.setImage(url)
+                } else {
+                    getImageBinary(url)
+                        .then((buffer) => comp.setImageBinary(buffer))
+                        .catch(console.warn);
+                }
             }
         },
         set scaledContent (payload) {

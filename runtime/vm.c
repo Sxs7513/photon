@@ -187,6 +187,11 @@ BOOL SJSFreeRuntime(SJSRuntime* qrt) {
     JS_FreeContext(qrt->ctx);
     JS_FreeRuntime(qrt->rt);
 
+    if (qrt->curl_ctx.curlm_h) {
+        curl_multi_cleanup(qrt->curl_ctx.curlm_h);
+        uv_close((uv_handle_t *) &qrt->curl_ctx.timer, NULL);
+    }
+
     int closed = 0;
     for (int i = 0; i < 5; i++) {
         if (uv_loop_close(&qrt->loop) == 0) {

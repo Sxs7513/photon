@@ -290,24 +290,36 @@ class StyleTransformer {
 }
 
 class StyleSheet {
-    static transform ({ prop, value }) {
-        const rule = rules[prop]
+    // static transform ({ prop, value }) {
+    //     const rule = rules[prop]
 
-        return (new StyleTransformer({ prop, value })).transform(rule)
-    }
+    //     return (new StyleTransformer({ prop, value })).transform(rule)
+    // }
 
-    get (obj, prop) {
-        const styleObj = obj[prop]
-        const keys = Object.keys(styleObj)
-        let str = ''
-        for (prop of keys) {
-            str += StyleSheet.transform({ prop, value: styleObj[prop] })
-        }
+    // get (obj, prop) {
+    //     const styleObj = obj[prop]
+    //     const keys = Object.keys(styleObj)
+    //     let str = ''
+    //     for (prop of keys) {
+    //         str += StyleSheet.transform({ prop, value: styleObj[prop] })
+    //     }
 
-        return str
+    //     return str
+    // }
+
+    static transform (styleObj) {
+      const keys = Object.keys(styleObj)
+      let str = ''
+      for (let prop of keys) {
+          const rule = rules[prop]
+          str += (new StyleTransformer({ prop, value: styleObj[prop] })).transform(rule)
+      }
+
+      return str
     }
 
     static create (obj) {
+        return obj
         return new Proxy(obj, new StyleSheet)
     }
 }

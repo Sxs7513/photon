@@ -13836,6 +13836,11 @@ For more info, visit https://fb.me/react-mock-scheduler`);
     const setter = {
       set style(styleSheet) {
         setStyle(comp, styleSheet);
+      },
+      set setTitle(title) {
+        if (oldProps.title != title) {
+          comp.setTitle(title);
+        }
       }
     };
     Object.assign(setter, newProps);

@@ -26,4 +26,6 @@ const style = StyleSheet.create({
   }
 })
 
+console.log(22222222222)
+
 Renderer.render(<App />);

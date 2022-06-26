@@ -7,6 +7,11 @@ function setContainerProps(comp, newProps, oldProps) {
     const setter = {
         set style(styleSheet) {
             setStyle(comp, styleSheet);
+        },
+        set title (title) {
+            if (oldProps.title != title) {
+                comp.setTitle(title);
+            }
         }
     }
     Object.assign(setter, newProps);

@@ -10,5 +10,6 @@ class FLexBasic {
  public:
   FLexBasic();
   YGNodeRef getFlexNode() const;
+  void setFlexNode(YGNodeRef node);
   ~FLexBasic();
 };

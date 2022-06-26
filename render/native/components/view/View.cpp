@@ -4,7 +4,6 @@
 #include <QEvent>
 #include <QDebug>
 
-
 void SWidget::insertChildBefore(void *child, void* beforeChildNode, void* childNode) {
     if (this->layout != nullptr) {
         this->layout->insertChildBefore(static_cast<QWidget*>(child), static_cast<YGNodeRef>(beforeChildNode), static_cast<YGNodeRef>(childNode));

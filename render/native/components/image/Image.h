@@ -1,6 +1,13 @@
 #pragma once
 #include <QLabel>
 #include <QImage>
+#include <QPixmap>
+#include <QDebug>
+#include <QByteArray>
+#include <QBuffer>
+#include <QIODevice>
+#include <QMovie>
+#include <QSharedPointer>
 
 #include <stdlib.h>
 

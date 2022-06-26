@@ -32,6 +32,8 @@ void NativeComponentImageInit (JSContext* ctx, JSValue ns);
 
 void NativeLoadingInit (JSContext* ctx, JSValue ns);
 
+void NativeComponentScrollViewInit (JSContext* ctx, JSValue ns);
+
 #define WRAPPED_JS_METHODS(COMPONENT,COMPONENT_NAME)                                                                        \
     static JSValue NativeCompShow(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                  \
         COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                                   \

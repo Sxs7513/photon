@@ -32,10 +32,10 @@ public:
 
 private:
     std::string text;
-    QLabel* label;
-    QMovie* movie;
-    QFrame* layout;
-    SMask* mask;
+    QLabel* label = nullptr;
+    QMovie* movie = nullptr;
+    QFrame* layout = nullptr;
+    SMask* mask = nullptr;
 };
 
 static SLoading* LoadingInstance = nullptr;

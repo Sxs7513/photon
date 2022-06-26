@@ -4,6 +4,7 @@ import TextConfig from "./components/Text/config";
 import ButtonConfig from "./components/Button/config";
 import ContainerConfig from "./components/Container/config";
 import ImageConfig from './components/Image/config';
+import ScrollViewConfig from './components/ScrollView/config';
 import { registerComponent } from "./components/config";
 import { Renderer } from "./core/renderer";
 import StyleSheet from './core/style'
@@ -13,11 +14,10 @@ export const Button = registerComponent(new ButtonConfig());
 export const Container = registerComponent(new ContainerConfig());
 export const Text = registerComponent(new TextConfig());
 export const Image = registerComponent(new ImageConfig());
+export const ScrollView = registerComponent(new ScrollViewConfig());
 
-globalThis.Renderer = Renderer
+globalThis.Renderer = Renderer;
 
-globalThis.React = react
+globalThis.React = react;
 
-globalThis.StyleSheet = StyleSheet
-
-globalThis.xh = globalThis.SJSJSBridge
+globalThis.StyleSheet = StyleSheet;

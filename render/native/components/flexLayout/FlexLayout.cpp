@@ -30,9 +30,9 @@ FlexLayout::~FlexLayout() {
     }
   }
   YGNodeRemoveAllChildren(this->node);
-}
+};
 
-void FlexLayout::setFlexNode(YGNodeRef parentNode) { this->node = parentNode; }
+void FlexLayout::setFlexNode(YGNodeRef parentNode) { this->node = parentNode; };
 
 void FlexLayout::insertChildBefore(QWidget* childWidget, YGNodeRef beforeChildNode, YGNodeRef childNode) {
   if (!this->node) {

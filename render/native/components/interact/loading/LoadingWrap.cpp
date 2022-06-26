@@ -37,7 +37,7 @@ static JSValue ShowLoading(JSContext *ctx, JSValueConst this_val, int argc, JSVa
         text = JS_GetPropertyStr(ctx, arg, "text");
     }
     if (JS_IsUndefined(duration)) {
-        dura = 3000;
+        dura = 0;
     } else {
         JS_ToInt64(ctx, &dura, duration);
     }
@@ -46,7 +46,9 @@ static JSValue ShowLoading(JSContext *ctx, JSValueConst this_val, int argc, JSVa
     lw->ctx = ctx;
 
     uv_timer_init(SJSGetLoop(ctx), &lw->req);
-    uv_timer_start(&lw->req, &LoadingCallBack, dura, 0);
+    if (dura) {
+        uv_timer_start(&lw->req, &LoadingCallBack, dura, 0);
+    }
     SLoading::setText(JS_IsUndefined(text) ? "" : JS_ToCString(ctx, text));
     SLoading::showLoading();
     JS_FreeValue(ctx, duration);

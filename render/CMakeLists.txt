@@ -44,6 +44,8 @@ add_library(render SHARED
     ./native/components/button/ButtonWrap.cpp
     ./native/components/view/View.cpp
     ./native/components/view/ViewWrap.cpp
+    ./native/components/scrollView/ScrollView.cpp
+    ./native/components/scrollView/ScrollViewWrap.cpp
     ./native/components/flexLayout/FlexLayout.cpp
     ./native/components/text/Text.cpp
     ./native/components/text/TextWrap.cpp

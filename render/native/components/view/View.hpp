@@ -4,19 +4,22 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QWidget>
+#include <QString>
+#include <QDebug>
 
+#include <stdlib.h>
+
+#include "components/Components.h"
 #include "components/flexLayout/FlexLayout.h"
 #include "core/widget/Widget.h"
 #include "core/flexUtils/FlexUtils.h"
-
-#include <QDebug>
 
 class SWidget : public QWidget, public CoreWidget {
   Q_OBJECT
   SET_YOGA_COMP_Q_PROPERTIES
  private:
-  FlexLayout* layout = nullptr;
  public:
+  FlexLayout* layout = nullptr;
   using QWidget::QWidget;
 
   void paintEvent(QPaintEvent* e) override {

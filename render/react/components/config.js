@@ -39,9 +39,8 @@ export function registerComponents(
 }
 
 export function setStyle (comp, obj) {
-    const arr = Array.isArray(obj) ? obj : [obj]
-    let str = ''
-    arr.forEach(style => str += style)
+    const styleObj = Array.isArray(obj) ? Object.assign(...obj) : obj
+    let str = StyleSheet.transform(styleObj)
 
     str = `#${comp.uid} {${str}}`
 

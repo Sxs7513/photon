@@ -1,10 +1,10 @@
-import { TextComp } from './comp'
+import { ScrollViewComp } from './comp'
 
-export default class TextConfig {
-    tagName = 'text';
+export default class ScrollView {
+    tagName = 'scrollview';
     native = null;
     shouldSetTextContent() {
-        return true;
+        return false;
     }
     createInstance(
         newProps,
@@ -12,7 +12,7 @@ export default class TextConfig {
         context,
         workInProgress
     ) {
-        const instance = new TextComp();
+        const instance = new ScrollViewComp();
         instance.setProps(newProps, {});
         return instance;
     }
@@ -31,12 +31,15 @@ export default class TextConfig {
     ) {
         instance.setProps(newProps, oldProps);
     }
+    commitUnmount (instance) {
+    }
     setProps(newProps, oldProps) {
     }
     insertBefore(child, beforeChild) {
 
     }
     appendInitialChild(child) {
+        
     }
     appendChild(child) {
         
