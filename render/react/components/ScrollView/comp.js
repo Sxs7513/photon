@@ -40,11 +40,10 @@ export class ScrollViewComp extends NativeView {
         this.appendChild(child);
     }
     appendChild(child) {
-        super.appendChild(child)
+        super.appendChild(child);
     }
     removeChild(child) {
         super.removeChild(child);
-        child.close();
     }
     unMount () {
         unRegistEvent(this.uid)

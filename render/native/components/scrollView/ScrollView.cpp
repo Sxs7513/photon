@@ -2,6 +2,9 @@
 
 SScrollArea::SScrollArea(QWidget *parentWidget): QScrollArea(parentWidget) {
     flexutils::configureFlexNode(this, this->getFlexNode(), false);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     if (this->root == nullptr) {
         // this->root = new SWidget;
         // YGNodeInsertChild(this->getFlexNode(), this->root->getFlexNode(), 0);
@@ -18,23 +21,33 @@ void SScrollArea::enableVertical(bool payload) {
 };
 
 void SScrollArea::insertChildBefore(void *child, void* beforeChildNode, void* childNode) {
-    if (this->root != nullptr) {
-        this->root->insertChildBefore(child, beforeChildNode, childNode);
-    }
+
 };
 
-void SScrollArea::removeChild(void* child, void* flexNode) {
-    // if (this->root != nullptr) {
-    //     this->root->removeChild(child, flexNode);
-    // }
+void SScrollArea::removeChild() {
+    this->setWidget(nullptr);
 };
 
 void SScrollArea::appendChild (void* child, void* flexNode) {
-    YGNodeInsertChild(this->getFlexNode(), static_cast<YGNodeRef>(flexNode), 0);
-    this->setWidget(static_cast<QWidget*>(child));
-    // if (this->root != nullptr) {
-    //     this->root->appendChild(child, flexNode);
-    // }
+    if (this->childWrapper != nullptr) {
+        delete this->childWrapper;
+    }
+    this->child = (SWidget*)child;
+    this->childWrapper = new SWidget();
+    this->childWrapper->setFlexNode(this->getFlexNode());
+    this->childWrapper->appendChild((void*)(this->child), (void*)(this->child->getFlexNode()));
+    this->setWidget(static_cast<QWidget*>(childWrapper));
+};
+
+void SScrollArea::resetChild () {
+    this->child->setParent(nullptr);
+    if (this->childWrapper != nullptr) {
+        delete this->childWrapper;
+    }
+    this->childWrapper = new SWidget();
+    this->childWrapper->setFlexNode(this->getFlexNode());
+    this->childWrapper->appendChild((void*)(this->child), (void*)(this->child->getFlexNode()));
+    this->setWidget(static_cast<QWidget*>(childWrapper));
 };
 
 void SScrollArea::setFlexNodeSizeControlled(bool isSizeControlled) {

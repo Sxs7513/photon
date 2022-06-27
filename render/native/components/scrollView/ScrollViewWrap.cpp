@@ -25,16 +25,8 @@ static JSValue NativeCompInsertChildBefore(JSContext *ctx, JSValueConst this_val
 
 static JSValue NativeCompRemoveChild(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     if (argc >= 1 && JS_IsObject(argv[0])) {
-        COMP_REF* child = (COMP_REF*)JS_GetOpaque3(argv[0]);
-        COMP_REF* parent = (COMP_REF*)JS_GetOpaque(this_val, ScrollViewClassID);
-
-        JSAtom flexNodeAtom = JS_NewAtom(ctx, "getFlexNode");
-        JSValue childFlexNode = JS_Invoke(ctx, argv[0], flexNodeAtom, 0, NULL);
-        
-        qDebug("ScrollView %s remove child %s", parent->uid, child->uid);
-        ((SScrollArea*)(parent->comp))->removeChild((void*)(child->comp), JS_GetOpaque3(childFlexNode));
-        JS_FreeValue(ctx, childFlexNode);
-        JS_FreeAtom(ctx, flexNodeAtom);
+        COMP_REF* ref = (COMP_REF*)JS_GetOpaque(this_val, ScrollViewClassID);
+        ((SScrollArea*)(ref->comp))->removeChild();
     }
     return JS_UNDEFINED;
 };
@@ -56,11 +48,9 @@ static JSValue NativeCompAppendChild(JSContext *ctx, JSValueConst this_val, int 
 };
 
 static JSValue NativeCompSetFlexNodeSizeControlled(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    if (JS_IsBool(argv[0])) {
-        COMP_REF* s = (COMP_REF*)JS_GetOpaque(this_val, ScrollViewClassID);
-        bool isSizeControlled = (bool)JS_ToBool(ctx, argv[0]);
-        ((SScrollArea*)(s->comp))->setFlexNodeSizeControlled(isSizeControlled);
-    }
+    COMP_REF* s = (COMP_REF*)JS_GetOpaque(this_val, ScrollViewClassID);
+    bool isSizeControlled = (bool)JS_ToBool(ctx, argv[0]);
+    ((SScrollArea*)(s->comp))->setFlexNodeSizeControlled(isSizeControlled);
 };
 
 // static JSValue NativeCompAddWidget(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -84,12 +74,18 @@ static JSValue NativeCompSetVerticalEnable(JSContext *ctx, JSValueConst this_val
     }
 };
 
+static JSValue NativeCompResetChild(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    COMP_REF* ref = (COMP_REF*)JS_GetOpaque(this_val, ScrollViewClassID);
+    ((SScrollArea*)(ref->comp))->resetChild();
+    return JS_UNDEFINED;
+};
+
 static const JSCFunctionListEntry ComponentProtoFuncs[] = {
     WRAPPED_JS_METHODS_REGISTER
     SJS_CFUNC_DEF("insertChildBefore", 0, NativeCompInsertChildBefore),
     SJS_CFUNC_DEF("removeChild", 0, NativeCompRemoveChild),
     SJS_CFUNC_DEF("appendChild", 0, NativeCompAppendChild),
-    // SJS_CFUNC_DEF("addWidget", 0, NativeCompAddWidget),
+    SJS_CFUNC_DEF("resetChild", 0, NativeCompResetChild),
     SJS_CFUNC_DEF("setHorizontalEnable", 0, NativeCompSetHorizontalEnable),
     SJS_CFUNC_DEF("setVerticalEnable", 0, NativeCompSetVerticalEnable),
     SJS_CFUNC_DEF("setFlexNodeSizeControlled", 0, NativeCompSetFlexNodeSizeControlled),

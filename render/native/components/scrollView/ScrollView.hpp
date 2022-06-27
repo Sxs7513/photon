@@ -27,14 +27,17 @@ class SScrollArea : public QScrollArea, public CoreWidget {
   public:
     using QScrollArea::QScrollArea;
     SWidget* root = nullptr;
+    SWidget* child = nullptr;
+    SWidget* childWrapper = nullptr;
 
     SScrollArea(QWidget *parentWidget = nullptr);
     ~SScrollArea();
 
     void appendChild(void* child, void* flexNode);
-    void removeChild(void* child, void* flexNode);
+    void removeChild();
     void insertChildBefore(void *childWidget, void* beforeChildNode, void* childNode);
     void setFlexNodeSizeControlled(bool isSizeControlled);
     void enableHorizontal(bool payload);
     void enableVertical(bool payload);
+    void resetChild();
 };

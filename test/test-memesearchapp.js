@@ -18572,7 +18572,6 @@ var ScrollViewComp = class extends NativeView3 {
   }
   removeChild(child) {
     super.removeChild(child);
-    child.close();
   }
   unMount() {
     unRegistEvent(this.uid);
@@ -18596,6 +18595,7 @@ var ScrollView = class {
   }
   commitUpdate(instance, updatePayload, oldProps, newProps, finishedWork) {
     instance.setProps(newProps, oldProps);
+    instance.resetChild();
   }
   commitUnmount(instance) {
   }
@@ -19064,10 +19064,10 @@ function List({ data }) {
       width
     };
   });
-  if (!list.length)
-    return null;
   return /* @__PURE__ */ React.createElement(ScrollView2, {
-    style: style.scrollView
+    style: style.scrollView,
+    horizontal: false,
+    vertical: true
   }, /* @__PURE__ */ React.createElement(View, {
     style: style.wrapper
   }, list.map((item, i) => {
@@ -19080,8 +19080,7 @@ function List({ data }) {
 var style = StyleSheet.create({
   image: {
     width: "100px",
-    height: "100px",
-    "background-color": "red"
+    height: "100px"
   },
   wrapper: {
     "flex-direction": "row",
@@ -19093,7 +19092,7 @@ var style = StyleSheet.create({
   scrollView: {
     "background-color": "#323234",
     "width": "500px",
-    "height": "500px"
+    "height": "400px"
   }
 });
 

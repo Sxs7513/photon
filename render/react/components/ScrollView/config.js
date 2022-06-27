@@ -21,6 +21,7 @@ export default class ScrollView {
         newProps,
         internalInstanceHandle
     ) {
+        
     }
     commitUpdate(
         instance,
@@ -30,6 +31,7 @@ export default class ScrollView {
         finishedWork
     ) {
         instance.setProps(newProps, oldProps);
+        instance.resetChild();
     }
     commitUnmount (instance) {
     }
