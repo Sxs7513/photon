@@ -6,15 +6,16 @@ extern "C" {
 }
 
 #include <map>
+#include <stdlib.h>
 
 #include <QEvent>
 #include <QDebug>
 
-#include "engineUtils.hpp"
+#include "engine.hpp"
 
 #include "core/jsUtils/event/click/Click.h"
 
-bool FireEventToJS(QEvent* event, const char* uid, std::string eventType);
+bool FireEventToJS(QEvent* event = nullptr, const char* uid = nullptr, std::string eventType = nullptr);
 
 void NativeEventWrapInit (JSContext* ctx);
 

@@ -1,5 +1,5 @@
-import { View, Image } from 'photon-ui'
-import { useCallback, useEffect } from 'react'
+import { View, Image, Input } from 'photon-ui'
+import { useCallback, useEffect, useRef } from 'react'
 
 const GIPHY_API_KEY = 'CwOJl2PRaXe9fnV2xHxRoCbP8gOM3erY'
 
@@ -27,22 +27,36 @@ export default function SearchBar ({ onChange }) {
     }, [])
 
     useEffect(() => {
-        (async () => {
-            try {
-                xh.showLoading()
-                const resp = await search('hello')
-                onChange(resp?.data)
-            } catch (e) {
-                console.error(e)
-            } finally {
-                xh.hideLoading()
-            }
-        })()
+        // (async () => {
+        //     try {
+        //         xh.showLoading()
+        //         const resp = await search('hello')
+        //         onChange(resp?.data)
+        //     } catch (e) {
+        //         console.error(e)
+        //     } finally {
+        //         xh.hideLoading()
+        //     }
+        // })()
     }, [])
 
     return (
-        <View>
-            
+        <View style={style.wrapper}>
+            <Input style={style.input} />
         </View>
     )
 }
+
+const style = StyleSheet.create({
+    wrapper: {
+        'flex-direction': 'row',
+        'padding': '10px',
+        'align-items': 'center',
+        'width': '100%',
+        'background-color': 'red',
+    },
+    input: {
+        'flex': 1,
+        'height': '40px',
+    }
+})

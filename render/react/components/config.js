@@ -41,7 +41,6 @@ export function registerComponents(
 export function setStyle (comp, obj) {
     const styleObj = Array.isArray(obj) ? Object.assign(...obj) : obj
     let str = StyleSheet.transform(styleObj)
-
     str = `#${comp.uid} {${str}}`
 
     comp.setStyle(str)

@@ -33,7 +33,9 @@ add_library(render SHARED
     ./native/core/yogaComp/Comp.cpp
     ./native/core/event/EventWidget.cpp
     ./native/core/jsUtils/event/Event.cpp
-    ./native/core/jsUtils/event/click/Click.cpp
+    ./native/core/jsUtils/event/Click/Click.cpp
+    ./native/core/jsUtils/variant/VariantWrap.cpp
+    ./native/core/jsUtils/variant/VariantWrap.hpp
 
     ./native/components/interact/loading/Loading.cpp
     ./native/components/interact/loading/LoadingWrap.cpp
@@ -51,6 +53,8 @@ add_library(render SHARED
     ./native/components/text/TextWrap.cpp
     ./native/components/image/Image.cpp
     ./native/components/image/ImageWrap.cpp
+    ./native/components/input/Input.cpp
+    ./native/components/input/InputWrap.cpp
     ./native/components/main.cpp
     ./native/render.cpp
 )

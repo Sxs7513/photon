@@ -13,6 +13,7 @@ void NativeComponentInit (JSContext* ctx, JSValue ns) {
     NativeComponentButtonInit(ctx, component_obj);
     NativeComponentImageInit(ctx, component_obj);
     NativeComponentScrollViewInit(ctx, component_obj);
+    NativeComponentInputInit (ctx, component_obj);
 
     NativeLoadingInit(ctx, component_obj);
 }

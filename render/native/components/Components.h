@@ -10,6 +10,9 @@ extern "C" {
 };
 
 #include <QtCore/QObject>
+#include <QVariant>
+
+#include "core/jsUtils/variant/VariantWrap.hpp"
 
 typedef struct COMP_REF {
     void* comp;
@@ -34,17 +37,19 @@ void NativeLoadingInit (JSContext* ctx, JSValue ns);
 
 void NativeComponentScrollViewInit (JSContext* ctx, JSValue ns);
 
+void NativeComponentInputInit (JSContext* ctx, JSValue ns);
+
 #define WRAPPED_JS_METHODS(COMPONENT,COMPONENT_NAME)                                                                        \
-    static JSValue NativeCompShow(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                  \
+    static JSValue NativeCompShow(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                    \
         COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                                   \
         printf("%s %s show\n", COMPONENT_NAME, s->uid);                                                                     \
         ((COMPONENT*)(s->comp))->show();                                                                                    \
     };                                                                                                                      \
                                                                                                                             \
-    static JSValue NativeCompSetStyle(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {              \
+    static JSValue NativeCompSetStyle(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                \
         if (argc >= 1 && JS_IsString(argv[0])) {                                                                            \
-            const char* style = JS_ToCString(ctx, argv[0]);                                                                \
-            JS_FreeValue(ctx, argv[0]);                                                                 \
+            const char* style = JS_ToCString(ctx, argv[0]);                                                                 \
+            JS_FreeValue(ctx, argv[0]);                                                                                     \
             COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                               \
             QString currentStyleSheet = ((COMPONENT*)(s->comp))->styleSheet();                                              \
             QString newStyle = QString(style);                                                                              \
@@ -85,25 +90,38 @@ void NativeComponentScrollViewInit (JSContext* ctx, JSValue ns);
             printf("%s %s setMaximumSize\n", COMPONENT_NAME, s->uid);                                                       \
         }                                                                                                                   \
     }                                                                                                                       \
-    static JSValue NativeCompGetFlexNode(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {           \
+    static JSValue NativeCompGetFlexNode(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {             \
         COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                                   \
         void* node = (void *)(((COMPONENT*)(s->comp))->getFlexNode());                                                      \
         JSValue obj = JS_NewObject(ctx);                                                                                    \
         JS_SetOpaque(obj, node);                                                                                            \
         return obj;                                                                                                         \
     }                                                                                                                       \
-    static JSValue NativeCompAddEventListener(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {      \
+    static JSValue NativeCompAddEventListener(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {        \
         if (argc >= 1 && JS_IsString(argv[0])) {                                                                            \
             COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                               \
-            const char* eventType = JS_ToCString(ctx, argv[0]);                                                             \
-            char* copy = (char*)malloc(strlen(eventType));                                                                  \
+            size_t len;                                                                                                     \
+            const char* eventType = JS_ToCStringLen(ctx, &len, argv[0]);                                                    \
+            char* copy = (char*)malloc(len);                                                                                \
             strcpy(copy, eventType);                                                                                        \
             ((COMPONENT*)(s->comp))->addEventListener(copy);                                                                \
+            JS_FreeCString(ctx, eventType);                                                                                 \
         }                                                                                                                   \    
     }                                                                                                                       \
-                                                                                                                                                                                                                             \
+                                                                                                                            \
+    static JSValue NativeCompProperty(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                \
+        if (argc >= 1 && JS_IsString(argv[0])) {                                                                            \
+            COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                               \
+            const char* property = JS_ToCString(ctx, argv[0]);                                                              \
+            QVariant* ref = new QVariant(((QWidget*)(s->comp))->property(property));                                        \
+            JS_FreeCString(ctx, property);                                                                                 \
+            JSValue obj = VariantWrapper(ref);                                                                              \
+            return obj;                                                                                                     \
+        }                                                                                                                   \
+    }                                                                                                                       \
+                                                                                                                                                                                                                         \
 
-#define WRAPPED_JS_METHODS_REGISTER                                                                         \
+#define WRAPPED_JS_METHODS_REGISTER                                                                       \
     SJS_CFUNC_DEF("show", 0, NativeCompShow),                                                             \
     SJS_CFUNC_DEF("setStyle", 0, NativeCompSetStyle),                                                     \
     SJS_CFUNC_DEF("close", 0, NativeCompClose),                                                           \
@@ -111,6 +129,7 @@ void NativeComponentScrollViewInit (JSContext* ctx, JSValue ns);
     SJS_CFUNC_DEF("setMaximumSize", 0, NativeCompSetMaximumSize),                                         \
     SJS_CFUNC_DEF("getFlexNode", 0, NativeCompGetFlexNode),                                               \
     SJS_CFUNC_DEF("addEventListener", 0, NativeCompAddEventListener),                                     \
+    SJS_CFUNC_DEF("property", 0, NativeCompProperty),                                                     \
 
 
 #endif

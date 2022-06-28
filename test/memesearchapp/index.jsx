@@ -26,19 +26,24 @@ function App () {
         <Container 
             minSize={minSize}
             title="Meme Search"
-            style={style.wrapper}
         >
-            <SearchBar 
-                onChange={(data) => dispatch({ type: 'list', value: data })}
-            />
-            <List data={state.list} />
+            <View
+                style={style.wrapper}
+            >
+                <SearchBar 
+                    onChange={(data) => dispatch({ type: 'list', value: data })}
+                />
+                {/* <List data={state.list} /> */}
+            </View>
         </Container>
     );
 }
 
 const style = StyleSheet.create({
     wrapper: {
-        'background-color': '#323234'
+        'background-color': '#323234',
+        'padding': '10px',
+        'flex': 1
     }
 })
 

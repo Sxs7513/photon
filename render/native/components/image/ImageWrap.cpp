@@ -128,7 +128,7 @@ static JSValue ImageConstructor(JSContext *ctx, JSValueConst new_target, int arg
     return JS_EXCEPTION;
 }
 
-static void FlexLayoutFinalizer(JSRuntime *rt, JSValue val) {
+static void InputFinalizer(JSRuntime *rt, JSValue val) {
     COMP_REF *th = (COMP_REF *)JS_GetOpaque(val, ImageClassID);
     printf("image %s release \n", th->uid);
     if (th) {
@@ -136,14 +136,14 @@ static void FlexLayoutFinalizer(JSRuntime *rt, JSValue val) {
     }
 }
 
-static JSClassDef ViewClass = {
+static JSClassDef InputClass = {
     "image",
-    .finalizer = FlexLayoutFinalizer,
+    .finalizer = InputFinalizer,
 };
 
 void NativeComponentImageInit (JSContext* ctx, JSValue ns) {
     JS_NewClassID(&ImageClassID);
-    JS_NewClass(JS_GetRuntime(ctx), ImageClassID, &ViewClass);
+    JS_NewClass(JS_GetRuntime(ctx), ImageClassID, &InputClass);
     JSValue proto = JS_NewObject(ctx);
     JS_SetPropertyFunctionList(ctx, proto, ComponentProtoFuncs, countof(ComponentProtoFuncs));
     JS_SetClassProto(ctx, ImageClassID, proto);

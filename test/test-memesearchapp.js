@@ -1393,7 +1393,7 @@ var require_react_development = __commonJS({
           var dispatcher = resolveDispatcher();
           return dispatcher.useReducer(reducer2, initialArg, init);
         }
-        function useRef(initialValue) {
+        function useRef2(initialValue) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useRef(initialValue);
         }
@@ -1675,7 +1675,7 @@ var require_react_development = __commonJS({
         exports.useLayoutEffect = useLayoutEffect;
         exports.useMemo = useMemo;
         exports.useReducer = useReducer2;
-        exports.useRef = useRef;
+        exports.useRef = useRef2;
         exports.useState = useState;
         exports.version = ReactVersion;
       })();
@@ -18611,6 +18611,69 @@ var ScrollView = class {
   }
 };
 
+// render/react/components/Input/comp.js
+var bridge7 = globalThis.SJSJSBridge;
+var NativeInput = bridge7.NativeRender.NativeComponents.Input;
+function setImageProps2(comp, newProps, oldProps) {
+  const setter = {
+    set style(styleSheet) {
+      setStyle(comp, styleSheet);
+    }
+  };
+  Object.assign(setter, newProps);
+}
+var InputComp = class extends NativeInput {
+  constructor(props) {
+    const uid = getUid();
+    super({ uid });
+    this.uid = uid;
+    setTimeout(() => {
+      console.log(typeof super.property("plainText"));
+    });
+  }
+  setProps(newProps, oldProps) {
+    setImageProps2(this, newProps, oldProps);
+  }
+  insertBefore(child, beforeChild) {
+  }
+  appendInitialChild(child) {
+  }
+  appendChild(child) {
+  }
+  removeChild(child) {
+  }
+};
+__publicField(InputComp, "tagName", "input");
+
+// render/react/components/Input/config.js
+var InputConfig = class {
+  tagName = "input";
+  native = null;
+  shouldSetTextContent() {
+    return false;
+  }
+  createInstance(newProps, rootInstance, context, workInProgress) {
+    const instance = new InputComp();
+    instance.setProps(newProps, {});
+    return instance;
+  }
+  commitMount(instance, newProps, internalInstanceHandle) {
+  }
+  commitUpdate(instance, updatePayload, oldProps, newProps, finishedWork) {
+    instance.setProps(newProps, oldProps);
+  }
+  setProps(newProps, oldProps) {
+  }
+  insertBefore(child, beforeChild) {
+  }
+  appendInitialChild(child) {
+  }
+  appendChild(child) {
+  }
+  removeChild(child) {
+  }
+};
+
 // render/react/core/reconciler/index.js
 var import_react_reconciler = __toESM(require_react_reconciler());
 var HostConfig = {
@@ -19007,6 +19070,7 @@ var Container2 = registerComponent(new ContainerConfig());
 var Text = registerComponent(new TextConfig());
 var Image = registerComponent(new ImageConfig());
 var ScrollView2 = registerComponent(new ScrollView());
+var Input = registerComponent(new InputConfig());
 globalThis.Renderer = Renderer2;
 globalThis.React = react;
 globalThis.StyleSheet = style_default;
@@ -19040,44 +19104,29 @@ function SearchBar({ onChange }) {
     return res.json();
   }, []);
   (0, import_react.useEffect)(() => {
-    (async () => {
-      try {
-        xh.showLoading();
-        const resp = await search("hello");
-        onChange(resp?.data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        xh.hideLoading();
-      }
-    })();
   }, []);
-  return /* @__PURE__ */ React.createElement(View, null);
-}
-
-// test/memesearchapp/components/list/index.jsx
-function List({ data }) {
-  const list = data.map((item) => {
-    const { url, width } = item.images.fixed_width_small;
-    return {
-      url,
-      width
-    };
-  });
-  return /* @__PURE__ */ React.createElement(ScrollView2, {
-    style: style.scrollView,
-    horizontal: false,
-    vertical: true
-  }, /* @__PURE__ */ React.createElement(View, {
+  return /* @__PURE__ */ React.createElement(View, {
     style: style.wrapper
-  }, list.map((item, i) => {
-    return /* @__PURE__ */ React.createElement(Image, {
-      style: [style.image, { width: `${item.width}px` }],
-      src: item.url
-    });
-  })));
+  }, /* @__PURE__ */ React.createElement(Input, {
+    style: style.input
+  }));
 }
 var style = StyleSheet.create({
+  wrapper: {
+    "flex-direction": "row",
+    "padding": "10px",
+    "align-items": "center",
+    "width": "100%",
+    "background-color": "red"
+  },
+  input: {
+    "flex": 1,
+    "height": "40px"
+  }
+});
+
+// test/memesearchapp/components/list/index.jsx
+var style2 = StyleSheet.create({
   image: {
     width: "100px",
     height: "100px"
@@ -19114,17 +19163,18 @@ function App() {
   const [state, dispatch] = (0, import_react2.useReducer)(reducer, initialState);
   return /* @__PURE__ */ React.createElement(Container2, {
     minSize,
-    title: "Meme Search",
-    style: style2.wrapper
+    title: "Meme Search"
+  }, /* @__PURE__ */ React.createElement(View, {
+    style: style3.wrapper
   }, /* @__PURE__ */ React.createElement(SearchBar, {
     onChange: (data) => dispatch({ type: "list", value: data })
-  }), /* @__PURE__ */ React.createElement(List, {
-    data: state.list
-  }));
+  })));
 }
-var style2 = StyleSheet.create({
+var style3 = StyleSheet.create({
   wrapper: {
-    "background-color": "#323234"
+    "background-color": "#323234",
+    "padding": "10px",
+    "flex": 1
   }
 });
 Renderer.render(/* @__PURE__ */ React.createElement(App, null));

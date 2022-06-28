@@ -1,7 +1,5 @@
 #include "Event.h"
 
-#include <stdlib.h>
-
 bool FireEventToJS(QEvent* event, const char* uid, std::string eventType) {
     SJSRuntime* qrt;
     JSValue arg[3];
