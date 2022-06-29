@@ -15,8 +15,8 @@
 #include "components/Components.h"
 #include "components/flexLayout/FlexLayout.h"
 #include "components/view/View.hpp"
-#include "core/widget/Widget.h"
-#include "core/flexUtils/FlexUtils.h"
+#include "core/Widget/Widget.h"
+#include "core/FlexUtils/FlexUtils.h"
 
 #include "deps/yoga/YGNode.h"
 

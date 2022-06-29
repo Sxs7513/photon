@@ -2,7 +2,7 @@
 
 #include "FlexLayout.h"
 
-#include "core/flexUtils/FlexUtils.h"
+#include "core/FlexUtils/FlexUtils.h"
 
 #include <stdlib.h>
 

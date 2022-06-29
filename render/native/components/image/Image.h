@@ -11,7 +11,7 @@
 
 #include <stdlib.h>
 
-#include "core/widget/Widget.h"
+#include "core/Widget/Widget.h"
 
 #include "engineUtils.hpp"
 

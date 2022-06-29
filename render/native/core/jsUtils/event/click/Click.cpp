@@ -1,11 +1,8 @@
-#include "Click.h"
+#include "Click.hpp"
 
 #include <stdlib.h>
 
-typedef struct EVENT_REF {
-    int test;
-    QEvent* e;
-} EVENT_REF;
+WRAPPED_JS_METHODS
 
 static JSClassID WrapClickEventID;
 
@@ -21,7 +18,7 @@ static JSClassDef ClickEventWrapClass = {
     .finalizer = EventFinalizer,
 };
 
-JSValue WrapClickEvent (QEvent* e) {
+JSValue WrapClickEvent (QEvent* e, QObject* eventTarget) {
     SJSRuntime* qrt;
     JSContext* ctx;
     JSValue proto;
@@ -51,7 +48,7 @@ static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val,
 }
 
 static const JSCFunctionListEntry component_proto_funcs[] = {
-    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),
+    WRAPPED_JS_METHODS_REGISTER
 };
 
 void NativeClickEventWrapInit (JSContext* ctx) {

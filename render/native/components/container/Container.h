@@ -1,7 +1,7 @@
 #pragma once
 #include <QMainWindow>
 
-#include "core/widget/Widget.h"
+#include "core/Widget/Widget.h"
 
 class SMainWindow : public QMainWindow, public CoreWidget {
   Q_OBJECT

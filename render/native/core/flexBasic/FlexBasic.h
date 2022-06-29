@@ -2,7 +2,7 @@
 #include <QWidget>
 #include "deps/yoga/YGNode.h"
 
-#include "core/flexUtils/FlexUtils.h"
+#include "core/FlexUtils/FlexUtils.h"
 
 class FLexBasic {
   YGNodeRef node;

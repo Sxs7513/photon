@@ -6,9 +6,13 @@ extern "C" {
 }
 
 #include <QEvent>
+#include <QWidget>
+#include <QLineEdit>
+#include <QTextEdit>
 
 #include "engine.hpp"
+#include "core/JSUtils/Event/Event.h"
 
-void NativeClickEventWrapInit (JSContext* ctx);
+void NativeTextChangeEventWrapInit (JSContext* ctx);
 
-JSValue WrapClickEvent (QEvent* e);
+JSValue WrapTextChangeEvent (QEvent* e = nullptr, QObject* eventTarget = nullptr);

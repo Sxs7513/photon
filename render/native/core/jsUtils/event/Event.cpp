@@ -1,6 +1,6 @@
 #include "Event.h"
 
-bool FireEventToJS(QEvent* event, const char* uid, std::string eventType) {
+bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget) {
     SJSRuntime* qrt;
     JSValue arg[3];
     JSContext* ctx;
@@ -14,7 +14,7 @@ bool FireEventToJS(QEvent* event, const char* uid, std::string eventType) {
         wrapFunc func = iter->second;
         arg[0] = JS_NewString(ctx, uid);
         arg[1] = JS_NewString(ctx, eventType.data());
-        arg[2] = func(event);
+        arg[2] = func(event, eventTarget);
 
         JSValue globalObj = JS_GetGlobalObject(ctx);
         JSValue fire = JS_GetPropertyStr(ctx, globalObj, "FIRE_QEVENT_CALLBACK");

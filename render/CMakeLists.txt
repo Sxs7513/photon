@@ -24,18 +24,18 @@ add_library(render SHARED
     ./native/deps/yoga/YGStyle.cpp
     ./native/deps/yoga/YGValue.cpp
     ./native/deps/yoga/Yoga.cpp
-    ./native/deps/yoga/event/event.cpp
+    ./native/deps/yoga/Event/event.cpp
     ./native/deps/yoga/internal/experiments.cpp
 
-    ./native/core/flexBasic/FlexBasic.cpp
-    ./native/core/flexUtils/FlexUtils.cpp
-    ./native/core/yogaComp/Style.cpp
-    ./native/core/yogaComp/Comp.cpp
-    ./native/core/event/EventWidget.cpp
-    ./native/core/jsUtils/event/Event.cpp
-    ./native/core/jsUtils/event/Click/Click.cpp
-    ./native/core/jsUtils/variant/VariantWrap.cpp
-    ./native/core/jsUtils/variant/VariantWrap.hpp
+    ./native/core/FlexBasic/FlexBasic.cpp
+    ./native/core/FlexUtils/FlexUtils.cpp
+    ./native/core/YogaComp/Style.cpp
+    ./native/core/YogaComp/Comp.cpp
+    ./native/core/Event/EventWidget.cpp
+    ./native/core/JSUtils/Event/Event.cpp
+    ./native/core/JSUtils/Event/Click/Click.cpp
+    ./native/core/JSUtils/variant/VariantWrap.cpp
+    ./native/core/JSUtils/variant/VariantWrap.hpp
 
     ./native/components/interact/loading/Loading.cpp
     ./native/components/interact/loading/LoadingWrap.cpp

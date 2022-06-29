@@ -1,7 +1,7 @@
 #pragma once
 #include <QLabel>
 
-#include "core/widget/Widget.h"
+#include "core/Widget/Widget.h"
 
 class SLabel : public QLabel, public CoreWidget {
   Q_OBJECT

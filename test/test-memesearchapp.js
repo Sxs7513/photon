@@ -18093,7 +18093,7 @@ var require_react_reconciler = __commonJS({
 // render/react/index.js
 var react = __toESM(require_react());
 
-// render/react/core/event/index.js
+// render/react/core/Event/index.js
 var eventMap = {};
 function registEvent(uid, eventType, fn) {
   eventMap[uid] = eventMap[uid] || {};

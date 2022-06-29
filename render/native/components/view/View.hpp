@@ -11,8 +11,8 @@
 
 #include "components/Components.h"
 #include "components/flexLayout/FlexLayout.h"
-#include "core/widget/Widget.h"
-#include "core/flexUtils/FlexUtils.h"
+#include "core/Widget/Widget.h"
+#include "core/FlexUtils/FlexUtils.h"
 
 class SWidget : public QWidget, public CoreWidget {
   Q_OBJECT

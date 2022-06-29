@@ -1,27 +1,22 @@
-#include "Click.h"
+#include "TextChange.hpp"
 
 #include <stdlib.h>
 
-typedef struct EVENT_REF {
-    int test;
-    QEvent* e;
-} EVENT_REF;
-
-static JSClassID WrapTextChangeID;
+static JSClassID WrapTextChangeEventID;
 
 static void EventFinalizer(JSRuntime *rt, JSValue val) {
-    EVENT_REF *th = (EVENT_REF *)JS_GetOpaque(val, WrapTextChangeID);
+    EVENT_REF *th = (EVENT_REF *)JS_GetOpaque(val, WrapTextChangeEventID);
     if (th) {
         free(th);
     }
-}
+};
 
-static JSClassDef ClickEventWrapClass = {
+static JSClassDef TextChangeEventWrapClass = {
     "event",
     .finalizer = EventFinalizer,
 };
 
-JSValue WrapClickEvent (QEvent* e) {
+JSValue WrapTextChangeEvent (QEvent* e, QObject* eventTarget) {
     SJSRuntime* qrt;
     JSContext* ctx;
     JSValue proto;
@@ -30,34 +25,26 @@ JSValue WrapClickEvent (QEvent* e) {
 
     qrt = GetSJSInstance();
     ctx = qrt->ctx;
-    proto = JS_GetClassProto(ctx, WrapTextChangeID);
-    obj = JS_NewObjectProtoClass(ctx, proto, WrapTextChangeID);
+    proto = JS_GetClassProto(ctx, WrapTextChangeEventID);
+    obj = JS_NewObjectProtoClass(ctx, proto, WrapTextChangeEventID);
     JS_FreeValue(ctx, proto);
-    s = (EVENT_REF*)js_mallocz(ctx, sizeof(*s));
 
-    s->e = e;
+    int isQTextEdit = eventTarget->metaObject()->className() === QStringLiteral("");
+    int isQLineEdit = 0;
 
-    JS_SetOpaque(obj, s);
+     = ((QWidget*)(s->comp))->property("text")
 
     return obj;
 };
 
-static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    EVENT_REF* ref = (EVENT_REF*)JS_GetOpaque(this_val, WrapTextChangeID);
-    if (ref) {
-        QEvent* e = ref->e;
-        e->accept();
-    }
-};
-
 static const JSCFunctionListEntry component_proto_funcs[] = {
-    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),
+
 };
 
 void NativeTextChangeEventWrapInit (JSContext* ctx) {
-    JS_NewClassID(&WrapTextChangeID);
-    JS_NewClass(JS_GetRuntime(ctx), WrapTextChangeID, &ClickEventWrapClass);
+    JS_NewClassID(&WrapTextChangeEventID);
+    JS_NewClass(JS_GetRuntime(ctx), WrapTextChangeEventID, &TextChangeEventWrapClass);
     JSValue proto = JS_NewObject(ctx);
     JS_SetPropertyFunctionList(ctx, proto, component_proto_funcs, countof(component_proto_funcs));
-    JS_SetClassProto(ctx, WrapTextChangeID, proto);
-}
+    JS_SetClassProto(ctx, WrapTextChangeEventID, proto);
+};

@@ -59,7 +59,7 @@ bool SWidget::event(QEvent *e) {
             QString str1 = this->objectName();
             QByteArray ba = str1.toLocal8Bit();
             const char *uid = ba.data();
-            if (this->EventWidget::event(e, uid, iter->second)) {
+            if (this->EventWidget::event(e, uid, iter->second, (QObject*)this)) {
                 return true;
             }
         }

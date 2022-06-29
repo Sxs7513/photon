@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 
-#include "core/flexBasic/FlexBasic.h"
+#include "core/FlexBasic/FlexBasic.h"
 
 #ifndef SET_YOGA_COMP_Q_PROPERTIES
 #define SET_YOGA_COMP_Q_PROPERTIES                                           \

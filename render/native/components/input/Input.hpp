@@ -3,7 +3,7 @@
 #include <QTextEdit>
 #include <QObject>
 
-#include "core/widget/Widget.h"
+#include "core/Widget/Widget.h"
 #include "engineUtils.hpp"
 #include "components/Components.h"
 

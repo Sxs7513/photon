@@ -12,7 +12,7 @@ extern "C" {
 #include <QtCore/QObject>
 #include <QVariant>
 
-#include "core/jsUtils/variant/VariantWrap.hpp"
+#include "core/JSUtils/variant/VariantWrap.hpp"
 
 typedef struct COMP_REF {
     void* comp;

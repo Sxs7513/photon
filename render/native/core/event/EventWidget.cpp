@@ -1,6 +1,6 @@
 
 #include "EventWidget.h"
-#include "core/jsUtils/event/Event.h"
+#include "core/JSUtils/Event/Event.h"
 
 void EventWidget::addEventListener (std::string eventType) {
     this->registerEvents.insert({ eventType, true });
@@ -15,6 +15,6 @@ bool EventWidget::isEventRegist(std::string eventType) {
     return this->registerEvents.count(eventType) > 0;
 };
 
-bool EventWidget::event(QEvent* event, const char* uid, std::string eventType) {
-    return FireEventToJS(event, uid, eventType);
+bool EventWidget::event(QEvent* event, const char* uid, std::string eventType, QWidget* eventTarget) {
+    return FireEventToJS(event, uid, eventType, eventTarget);
 };

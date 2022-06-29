@@ -13557,7 +13557,7 @@ For more info, visit https://fb.me/react-mock-scheduler`);
   // render/react/index.js
   var react = __toESM(require_react());
 
-  // render/react/core/event/index.js
+  // render/react/core/Event/index.js
   var eventMap = {};
   function registEvent(uid, eventType, fn) {
     eventMap[uid] = eventMap[uid] || {};
