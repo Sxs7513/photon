@@ -8,7 +8,6 @@ void GetProgramDir (char* buf) {
     dirname(buf);
 };
 
-
 #ifndef WIN32
 
 static void _split_whole_name(const char *whole_name, char *fname, char *ext) {
@@ -98,4 +97,4 @@ void ReplenishExt (char* path) {
     if (ext[0] == '\0') {
         strcat(path, ".js");
     }
-}
+};

@@ -42,7 +42,7 @@ export default function SearchBar ({ onChange }) {
 
     return (
         <View style={style.wrapper}>
-            <Input style={style.input} />
+            <Input style={style.input} onChange={e => console.log(e)} />
         </View>
     )
 }

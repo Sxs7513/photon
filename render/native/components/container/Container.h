@@ -12,7 +12,6 @@ class SMainWindow : public QMainWindow, public CoreWidget {
 
   static SMainWindow* getInstance();
 
-  virtual void connectSignalsToEventEmitter() {}
 };
 
 static SMainWindow* SMainWindowInstance = nullptr;

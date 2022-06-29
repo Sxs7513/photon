@@ -7,7 +7,6 @@ bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObjec
 
     qrt = GetSJSInstance();
     ctx = qrt->ctx;
-
     std::map<std::string, wrapFunc>::iterator iter = WrapEventDict.find(eventType);
 
     if (iter != WrapEventDict.end()) {
@@ -26,10 +25,17 @@ bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObjec
         JS_FreeValue(ctx, arg[1]);
         JS_FreeValue(ctx, arg[2]);
 
-        return event->isAccepted();
+        if (event != nullptr) {
+            return event->isAccepted();
+        } else {
+            return true;
+        }
     }
+
+    return true;
 }
 
 void NativeEventWrapInit (JSContext* ctx) {
     NativeClickEventWrapInit(ctx);
+    NativeTextChangeEventWrapInit(ctx);
 }

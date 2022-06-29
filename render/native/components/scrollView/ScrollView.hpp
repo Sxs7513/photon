@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-#include "components/Components.h"
+#include "components/Components.hpp"
 #include "components/flexLayout/FlexLayout.h"
 #include "components/view/View.hpp"
 #include "core/Widget/Widget.h"

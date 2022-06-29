@@ -5,6 +5,8 @@
 #include "components/flexLayout/FlexLayout.h"
 #include "core/Widget/Widget.h"
 #include "core/FlexUtils/FlexUtils.h"
+#include "components/Components.hpp"
+
 
 class SButton : public QPushButton, public CoreWidget {
   Q_OBJECT
@@ -15,4 +17,5 @@ class SButton : public QPushButton, public CoreWidget {
   SButton(QWidget *parentWidget = nullptr);
 
   bool event(QEvent* e) override;
+
 };

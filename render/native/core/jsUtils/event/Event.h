@@ -3,7 +3,7 @@
 extern "C" {
     #include "quickjs-libc.h"
     #include "sjs.h"
-}
+};
 
 #include <map>
 #include <stdlib.h>
@@ -18,24 +18,34 @@ typedef struct EVENT_REF {
     QEvent* e;
 } EVENT_REF;
 
-bool FireEventToJS(QEvent* event = nullptr, const char* uid = nullptr, std::string eventType = nullptr, QObject* eventTarget = nullptr);
+bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget);
 
 void NativeEventWrapInit (JSContext* ctx);
 
-typedef JSValue (*wrapFunc)(QEvent* e);
+void NativeClickEventWrapInit (JSContext* ctx);
+
+JSValue WrapClickEvent (QEvent* e, QObject* eventTarget);
+
+void NativeTextChangeEventWrapInit (JSContext* ctx);
+
+JSValue WrapTextChangeEvent (QEvent* e = nullptr, QObject* eventTarget = nullptr);
+
+typedef JSValue (*wrapFunc)(QEvent* e, QObject* eventTarget);
 
 static std::map<std::string, wrapFunc> WrapEventDict {
-    { "click", &WrapClickEvent }
+    { "click", &WrapClickEvent },
+    { "textChange", &WrapTextChangeEvent }
 };
 
-#define WRAPPED_EVENT_METHODS
-    static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-        EVENT_REF* ref = (EVENT_REF*)JS_GetOpaque(this_val, WrapClickEventID);
-        if (ref) {
-            QEvent* e = ref->e;
-            e->accept();
-        }
-    };
+#define WRAPPED_EVENT_METHODS                                                                                                      \
+    static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                    \
+        EVENT_REF* ref = (EVENT_REF*)JS_GetOpaque3(this_val);                                                                           \
+        if (ref) {                                                                                                                      \
+            QEvent* e = ref->e;                                                                                                         \
+            e->accept();                                                                                                                \
+        }                                                                                                                               \
+    };                                                                                                                                  \
+                                                                                                                                        \
 
-#define WRAPPED_JS_METHODS_REGISTER
-    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),
+#define WRAPPED_EVENT_METHODS_REGISTER                                                                                                  \
+    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),                                                                    \

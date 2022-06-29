@@ -10,9 +10,8 @@ extern "C" {
 #include <QLineEdit>
 #include <QTextEdit>
 
+#include <stdlib.h>
+
 #include "engine.hpp"
 #include "core/JSUtils/Event/Event.h"
-
-void NativeTextChangeEventWrapInit (JSContext* ctx);
-
-JSValue WrapTextChangeEvent (QEvent* e = nullptr, QObject* eventTarget = nullptr);
+#include "components/input/Input.hpp"

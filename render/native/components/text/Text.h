@@ -11,5 +11,4 @@ class SLabel : public QLabel, public CoreWidget {
   using QLabel::QLabel;
   SLabel(QWidget *parentWidget = nullptr);
 
-  virtual void connectSignalsToEventEmitter() {}
 };

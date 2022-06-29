@@ -56,9 +56,8 @@ bool SWidget::event(QEvent *e) {
 
     if ((iter = supportEvents.find(e->type())) != supportEvents.end()) {
         if (this->EventWidget::isEventRegist(iter->second)) {
-            QString str1 = this->objectName();
-            QByteArray ba = str1.toLocal8Bit();
-            const char *uid = ba.data();
+            char* uid;
+            QStringToChar(this->objectName(), &uid);
             if (this->EventWidget::event(e, uid, iter->second, (QObject*)this)) {
                 return true;
             }

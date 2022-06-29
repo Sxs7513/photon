@@ -55,3 +55,18 @@ export function handleOnClick (comp, fn) {
         comp.removeEventListener('click')
     }
 }
+
+export function handleOnTextChange (comp, fn) {
+    if (typeof fn !== 'function') return;
+    try {
+        if (fn) {
+            registEvent(comp.uid, 'textChange', fn)
+            comp.addEventListener('textChange')
+        } else {
+            unRegistEvent(comp.uid, 'textChange')
+            comp.removeEventListener('textChange')
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}

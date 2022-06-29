@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 
-#include "components/Components.h"
+#include "components/Components.hpp"
 #include "components/flexLayout/FlexLayout.h"
 #include "core/Widget/Widget.h"
 #include "core/FlexUtils/FlexUtils.h"
@@ -37,4 +37,5 @@ class SWidget : public QWidget, public CoreWidget {
   void insertChildBefore(void *childWidget, void* beforeChildNode, void* childNode);
   void setFlexNodeSizeControlled(bool isSizeControlled);
   bool event(QEvent *e) override;
+
 };

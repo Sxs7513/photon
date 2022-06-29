@@ -18093,7 +18093,7 @@ var require_react_reconciler = __commonJS({
 // render/react/index.js
 var react = __toESM(require_react());
 
-// render/react/core/Event/index.js
+// render/react/core/event/index.js
 var eventMap = {};
 function registEvent(uid, eventType, fn) {
   eventMap[uid] = eventMap[uid] || {};
@@ -18108,6 +18108,7 @@ function unRegistEvent(uid, eventType) {
   }
 }
 function fireEvent(uid, eventType, e) {
+  console.log(uid);
   const obj = eventMap[uid];
   if (obj) {
     try {
@@ -18152,6 +18153,21 @@ function handleOnClick(comp, fn) {
   } else {
     unRegistEvent(comp.uid, "click");
     comp.removeEventListener("click");
+  }
+}
+function handleOnTextChange(comp, fn) {
+  if (typeof fn !== "function")
+    return;
+  try {
+    if (fn) {
+      registEvent(comp.uid, "textChange", fn);
+      comp.addEventListener("textChange");
+    } else {
+      unRegistEvent(comp.uid, "textChange");
+      comp.removeEventListener("textChange");
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
@@ -18614,10 +18630,13 @@ var ScrollView = class {
 // render/react/components/Input/comp.js
 var bridge7 = globalThis.SJSJSBridge;
 var NativeInput = bridge7.NativeRender.NativeComponents.Input;
-function setImageProps2(comp, newProps, oldProps) {
+function setInputProps(comp, newProps, oldProps) {
   const setter = {
     set style(styleSheet) {
       setStyle(comp, styleSheet);
+    },
+    set onChange(fn) {
+      handleOnTextChange(comp, fn);
     }
   };
   Object.assign(setter, newProps);
@@ -18627,12 +18646,9 @@ var InputComp = class extends NativeInput {
     const uid = getUid();
     super({ uid });
     this.uid = uid;
-    setTimeout(() => {
-      console.log(typeof super.property("plainText"));
-    });
   }
   setProps(newProps, oldProps) {
-    setImageProps2(this, newProps, oldProps);
+    setInputProps(this, newProps, oldProps);
   }
   insertBefore(child, beforeChild) {
   }
@@ -19108,7 +19124,8 @@ function SearchBar({ onChange }) {
   return /* @__PURE__ */ React.createElement(View, {
     style: style.wrapper
   }, /* @__PURE__ */ React.createElement(Input, {
-    style: style.input
+    style: style.input,
+    onChange: (e) => console.log(e)
   }));
 }
 var style = StyleSheet.create({

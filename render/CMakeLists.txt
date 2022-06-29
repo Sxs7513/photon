@@ -34,9 +34,11 @@ add_library(render SHARED
     ./native/core/Event/EventWidget.cpp
     ./native/core/JSUtils/Event/Event.cpp
     ./native/core/JSUtils/Event/Click/Click.cpp
+    ./native/core/JSUtils/Event/Input/TextChange/TextChange.cpp
     ./native/core/JSUtils/variant/VariantWrap.cpp
     ./native/core/JSUtils/variant/VariantWrap.hpp
 
+    ./native/components/Components.cpp
     ./native/components/interact/loading/Loading.cpp
     ./native/components/interact/loading/LoadingWrap.cpp
     ./native/components/mask/Mask.cpp

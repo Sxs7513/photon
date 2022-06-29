@@ -15,7 +15,7 @@
 
 #include "engineUtils.hpp"
 
-#include "components/Components.h"
+#include "components/Components.hpp"
 
 class SImage : public QLabel, public CoreWidget {
   Q_OBJECT
@@ -24,4 +24,5 @@ class SImage : public QLabel, public CoreWidget {
   SET_YOGA_COMP_Q_PROPERTIES
   using QLabel::QLabel;
   SImage(QWidget *parentWidget = nullptr);
+
 };

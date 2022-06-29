@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-WRAPPED_JS_METHODS
+WRAPPED_EVENT_METHODS
 
 static JSClassID WrapClickEventID;
 
@@ -39,16 +39,8 @@ JSValue WrapClickEvent (QEvent* e, QObject* eventTarget) {
     return obj;
 };
 
-static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    EVENT_REF* ref = (EVENT_REF*)JS_GetOpaque(this_val, WrapClickEventID);
-    if (ref) {
-        QEvent* e = ref->e;
-        e->accept();
-    }
-}
-
 static const JSCFunctionListEntry component_proto_funcs[] = {
-    WRAPPED_JS_METHODS_REGISTER
+    // WRAPPED_EVENT_METHODS_REGISTER
 };
 
 void NativeClickEventWrapInit (JSContext* ctx) {

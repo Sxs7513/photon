@@ -1,7 +1,5 @@
 #include "TextChange.hpp"
 
-#include <stdlib.h>
-
 static JSClassID WrapTextChangeEventID;
 
 static void EventFinalizer(JSRuntime *rt, JSValue val) {
@@ -21,7 +19,8 @@ JSValue WrapTextChangeEvent (QEvent* e, QObject* eventTarget) {
     JSContext* ctx;
     JSValue proto;
     JSValue obj;
-    EVENT_REF* s;
+    QString valueString;
+    char* value;
 
     qrt = GetSJSInstance();
     ctx = qrt->ctx;
@@ -29,10 +28,18 @@ JSValue WrapTextChangeEvent (QEvent* e, QObject* eventTarget) {
     obj = JS_NewObjectProtoClass(ctx, proto, WrapTextChangeEventID);
     JS_FreeValue(ctx, proto);
 
-    int isQTextEdit = eventTarget->metaObject()->className() === QStringLiteral("");
-    int isQLineEdit = 0;
+    bool isQTextEdit = eventTarget->metaObject()->className() == QStringLiteral("SInput");
+    bool isQLineEdit = eventTarget->metaObject()->className() == QStringLiteral("SLineEdit");
+    
+    if (isQTextEdit) {
+        valueString = ((SInput*)eventTarget)->property("plainText").toString();
+    } else if (isQLineEdit) {
+        // valueString = ((SLineEdit*)eventTarget)->property("text").toString();
+    }
 
-     = ((QWidget*)(s->comp))->property("text")
+    value = valueString.toLocal8Bit().data();
+
+    JS_SetPropertyStr(ctx, obj, "value", JS_NewString(ctx, value));
 
     return obj;
 };

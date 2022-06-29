@@ -1,13 +1,16 @@
-import { getUid, setStyle } from '../config'
+import { getUid, setStyle, handleOnTextChange } from '../config'
 
 const bridge = globalThis.SJSJSBridge;
 const NativeInput = bridge.NativeRender.NativeComponents.Input
 
-function setImageProps(comp, newProps, oldProps) {
+function setInputProps(comp, newProps, oldProps) {
     const setter = {
         set style(styleSheet) {
             setStyle(comp, styleSheet);
         },
+        set onChange (fn) {
+            handleOnTextChange(comp, fn);
+        }
     }
     Object.assign(setter, newProps);
 }
@@ -17,13 +20,9 @@ export class InputComp extends NativeInput {
         const uid = getUid()
         super({ uid })
         this.uid = uid
-
-        setTimeout(() => {
-            console.log(typeof super.property('plainText'))
-        })
     }
     setProps(newProps, oldProps) {
-        setImageProps(this, newProps, oldProps);
+        setInputProps(this, newProps, oldProps);
     }
     insertBefore(child, beforeChild) {
     }

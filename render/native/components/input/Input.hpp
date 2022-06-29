@@ -2,10 +2,11 @@
 
 #include <QTextEdit>
 #include <QObject>
+#include <QDebug>
 
 #include "core/Widget/Widget.h"
 #include "engineUtils.hpp"
-#include "components/Components.h"
+#include "components/Components.hpp"
 
 class SInput : public QTextEdit, public CoreWidget {
     Q_OBJECT
@@ -16,5 +17,5 @@ class SInput : public QTextEdit, public CoreWidget {
     using QTextEdit::QTextEdit;
     SInput(QWidget *parentWidget = nullptr);
 
-    virtual void connectSignalsToEventEmitter();
+    void connectSignal();
 };
