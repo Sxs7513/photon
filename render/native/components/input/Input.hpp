@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QTextEdit>
+#include <QLineEdit>
 #include <QObject>
 #include <QDebug>
 
@@ -8,13 +8,13 @@
 #include "engineUtils.hpp"
 #include "components/Components.hpp"
 
-class SInput : public QTextEdit, public CoreWidget {
+class SInput : public QLineEdit , public CoreWidget {
     Q_OBJECT
 
   public:
     SET_YOGA_COMP_Q_PROPERTIES
 
-    using QTextEdit::QTextEdit;
+    using QLineEdit::QLineEdit;
     SInput(QWidget *parentWidget = nullptr);
 
     void connectSignal();

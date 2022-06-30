@@ -5,6 +5,7 @@
 
 #include <QEvent>
 #include <QObject>
+#include <QString>
 
 // class to unify all the custom features + add extra features if needed
 class EventWidget {
@@ -16,5 +17,5 @@ class EventWidget {
 
     bool isEventRegist(std::string eventType);
 
-    bool event(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget);
+    bool event(QEvent* event, QString uid, std::string eventType, QObject* eventTarget);
 };

@@ -15,3 +15,4 @@ extern "C" {
 #include "engine.hpp"
 #include "core/JSUtils/Event/Event.h"
 #include "components/input/Input.hpp"
+#include "components/textarea/Textarea.hpp"

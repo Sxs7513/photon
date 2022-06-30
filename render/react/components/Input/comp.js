@@ -35,4 +35,8 @@ export class InputComp extends NativeInput {
     removeChild(child) {
         
     }
+
+    get text () {
+        return this.property("text")?.toString() || "";
+    }
 }

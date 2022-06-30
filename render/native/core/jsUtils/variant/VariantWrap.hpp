@@ -6,5 +6,8 @@ extern "C" {
 #include "engine.hpp"
 
 #include <QVariant>
+#include <QString>
 
 JSValue VariantWrapper(QVariant* target);
+
+void NativeVariantWrapInit (JSContext* ctx, JSValue ns);

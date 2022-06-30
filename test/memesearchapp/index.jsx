@@ -42,7 +42,6 @@ function App () {
 const style = StyleSheet.create({
     wrapper: {
         'background-color': '#323234',
-        'padding': '10px',
         'flex': 1
     }
 })

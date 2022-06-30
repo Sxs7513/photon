@@ -12,9 +12,7 @@ bool SButton::event (QEvent* e) {
     std::map<QEvent::Type, std::string>::iterator iter;
     if ((iter = supportEvents.find(e->type())) != supportEvents.end()) {
         if (this->EventWidget::isEventRegist(iter->second)) {
-            char* uid;
-            QStringToChar(this->objectName(), &uid);
-            if (this->EventWidget::event(e, uid, iter->second, (QObject*)this)) {
+            if (this->EventWidget::event(e, this->objectName(), iter->second, (QObject*)this)) {
                 return true;
             }
         }

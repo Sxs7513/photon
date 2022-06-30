@@ -1,9 +1,11 @@
-import { View, Image, Input } from 'photon-ui'
+import { View, Image, Input, Button } from 'photon-ui'
 import { useCallback, useEffect, useRef } from 'react'
 
 const GIPHY_API_KEY = 'CwOJl2PRaXe9fnV2xHxRoCbP8gOM3erY'
 
 export default function SearchBar ({ onChange }) {
+    const input = useRef(null);
+
     const search = useCallback(async (searchTerm) => {
         let url = 'https://api.giphy.com/v1/gifs/search?';
         const obj = {
@@ -42,7 +44,8 @@ export default function SearchBar ({ onChange }) {
 
     return (
         <View style={style.wrapper}>
-            <Input style={style.input} onChange={e => console.log(e)} />
+            <Input ref={input} style={style.input} onChange={e => console.log(e)} />
+            <Button onClick={() => console.log(input.current.text)} style={style.button} text={' 🔎 '} />
         </View>
     )
 }
@@ -53,10 +56,14 @@ const style = StyleSheet.create({
         'padding': '10px',
         'align-items': 'center',
         'width': '100%',
-        'background-color': 'red',
     },
     input: {
         'flex': 1,
-        'height': '40px',
+        'height': '30px',
+    },
+    button: {
+        'margin-left': '5px',
+        'width': '50px',
+        'height': '30px',
     }
 })

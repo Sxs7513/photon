@@ -18108,7 +18108,6 @@ function unRegistEvent(uid, eventType) {
   }
 }
 function fireEvent(uid, eventType, e) {
-  console.log(uid);
   const obj = eventMap[uid];
   if (obj) {
     try {
@@ -18658,6 +18657,9 @@ var InputComp = class extends NativeInput {
   }
   removeChild(child) {
   }
+  get text() {
+    return this.property("text")?.toString() || "";
+  }
 };
 __publicField(InputComp, "tagName", "input");
 
@@ -18709,6 +18711,9 @@ var HostConfig = {
   },
   shouldSetTextContent: function(type, nextProps) {
     return false;
+  },
+  getPublicInstance: (instance) => {
+    return instance;
   },
   createInstance: (type, newProps, rootContainerInstance, _currentHostContext, workInProgress) => {
     const { createInstance } = getComponentByTagName(type);
@@ -19098,6 +19103,7 @@ var import_react2 = __toESM(require_react());
 var import_react = __toESM(require_react());
 var GIPHY_API_KEY = "CwOJl2PRaXe9fnV2xHxRoCbP8gOM3erY";
 function SearchBar({ onChange }) {
+  const input = (0, import_react.useRef)(null);
   const search = (0, import_react.useCallback)(async (searchTerm) => {
     let url = "https://api.giphy.com/v1/gifs/search?";
     const obj = {
@@ -19124,8 +19130,13 @@ function SearchBar({ onChange }) {
   return /* @__PURE__ */ React.createElement(View, {
     style: style.wrapper
   }, /* @__PURE__ */ React.createElement(Input, {
+    ref: input,
     style: style.input,
     onChange: (e) => console.log(e)
+  }), /* @__PURE__ */ React.createElement(Button, {
+    onClick: () => console.log(input.current.text),
+    style: style.button,
+    text: " \u{1F50E} "
   }));
 }
 var style = StyleSheet.create({
@@ -19133,12 +19144,16 @@ var style = StyleSheet.create({
     "flex-direction": "row",
     "padding": "10px",
     "align-items": "center",
-    "width": "100%",
-    "background-color": "red"
+    "width": "100%"
   },
   input: {
     "flex": 1,
-    "height": "40px"
+    "height": "30px"
+  },
+  button: {
+    "margin-left": "5px",
+    "width": "50px",
+    "height": "30px"
   }
 });
 
@@ -19190,7 +19205,6 @@ function App() {
 var style3 = StyleSheet.create({
   wrapper: {
     "background-color": "#323234",
-    "padding": "10px",
     "flex": 1
   }
 });

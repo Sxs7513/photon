@@ -2,8 +2,18 @@
 
 static JSClassID VariantWrapClassID;
 
-static const JSCFunctionListEntry ComponentProtoFuncs[] = {
+static JSValue NativeVariantToString(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    QVariant* ref = (QVariant*)JS_GetOpaque(this_val, VariantWrapClassID);
+    QString str = ref->toString();
+    QByteArray ba = str.toLocal8Bit();
+    
+    JSValue result = JS_NewStringLen(ctx, ba.data(), ba.size());
 
+    return result;
+};
+
+static const JSCFunctionListEntry ComponentProtoFuncs[] = {
+    SJS_CFUNC_DEF("toString", 0, NativeVariantToString),  
 };
 
 static const JSCFunctionListEntry ComponentClassFuncs[] = {
@@ -15,10 +25,8 @@ JSValue VariantWrapper(QVariant* ref) {
 
     qrt = GetSJSInstance();
     ctx = qrt->ctx;
-    JSValue proto = JS_GetClassProto(ctx, VariantWrapClassID);
 
-    JSValue obj = JS_NewObjectProtoClass(ctx, proto, VariantWrapClassID);
-    JS_FreeValue(ctx, proto);
+    JSValue obj = JS_NewObjectClass(ctx, VariantWrapClassID);
     if (JS_IsException(obj))
         goto fail;
 
@@ -31,7 +39,10 @@ JSValue VariantWrapper(QVariant* ref) {
 };
 
 static void VariantWrapFinalizer(JSRuntime *rt, JSValue val) {
-
+    QVariant *ref = (QVariant *)JS_GetOpaque(val, VariantWrapClassID);
+    if (ref) {
+        free(ref);
+    }
 };
 
 static JSClassDef VariantWrapClass = {

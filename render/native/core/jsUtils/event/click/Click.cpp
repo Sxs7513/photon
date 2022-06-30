@@ -40,7 +40,7 @@ JSValue WrapClickEvent (QEvent* e, QObject* eventTarget) {
 };
 
 static const JSCFunctionListEntry component_proto_funcs[] = {
-    // WRAPPED_EVENT_METHODS_REGISTER
+    WRAPPED_EVENT_METHODS_REGISTER
 };
 
 void NativeClickEventWrapInit (JSContext* ctx) {

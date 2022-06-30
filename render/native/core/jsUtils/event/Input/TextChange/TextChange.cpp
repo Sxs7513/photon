@@ -28,18 +28,19 @@ JSValue WrapTextChangeEvent (QEvent* e, QObject* eventTarget) {
     obj = JS_NewObjectProtoClass(ctx, proto, WrapTextChangeEventID);
     JS_FreeValue(ctx, proto);
 
-    bool isQTextEdit = eventTarget->metaObject()->className() == QStringLiteral("SInput");
-    bool isQLineEdit = eventTarget->metaObject()->className() == QStringLiteral("SLineEdit");
+    bool isQTextEdit = eventTarget->metaObject()->className() == QStringLiteral("STextarea");
+    bool isQLineEdit = eventTarget->metaObject()->className() == QStringLiteral("SInput");
     
     if (isQTextEdit) {
         valueString = ((SInput*)eventTarget)->property("plainText").toString();
     } else if (isQLineEdit) {
-        // valueString = ((SLineEdit*)eventTarget)->property("text").toString();
+        valueString = ((STextarea*)eventTarget)->property("text").toString();
     }
 
-    value = valueString.toLocal8Bit().data();
+    QByteArray ba = valueString.toLocal8Bit();
+    value = ba.data();
 
-    JS_SetPropertyStr(ctx, obj, "value", JS_NewString(ctx, value));
+    JS_SetPropertyStr(ctx, obj, "value", JS_NewStringLen(ctx, value, ba.size()));
 
     return obj;
 };

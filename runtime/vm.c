@@ -145,8 +145,8 @@ void SJSRunMain(SJSRuntime *qrt, const char *filePath) {
     char buf[1000]= {0};
     JSContext *ctx = qrt->ctx;
 
+    SJSBootstrap(ctx);
     if (filePath) {
-        SJSBootstrap(ctx);
 
         // SJSMakeEntryCommonJS(buf, &buf_len, filePath);
 

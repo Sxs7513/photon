@@ -19,6 +19,9 @@ const HostConfig = {
   shouldSetTextContent: function(type, nextProps) {
     return false
   },
+  getPublicInstance: instance => {
+    return instance;
+  },
   createInstance: (type, newProps, rootContainerInstance, _currentHostContext, workInProgress) => {
     const { createInstance } = getComponentByTagName(type);
     return createInstance(

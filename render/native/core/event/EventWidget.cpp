@@ -15,6 +15,6 @@ bool EventWidget::isEventRegist(std::string eventType) {
     return this->registerEvents.count(eventType) > 0;
 };
 
-bool EventWidget::event(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget) {
+bool EventWidget::event(QEvent* event, QString uid, std::string eventType, QObject* eventTarget) {
     return FireEventToJS(event, uid, eventType, eventTarget);
 };

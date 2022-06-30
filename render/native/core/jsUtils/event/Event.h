@@ -10,6 +10,7 @@ extern "C" {
 
 #include <QEvent>
 #include <QDebug>
+#include <QString>
 
 #include "engine.hpp"
 
@@ -18,7 +19,7 @@ typedef struct EVENT_REF {
     QEvent* e;
 } EVENT_REF;
 
-bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget);
+bool FireEventToJS(QEvent* event, QString uid, std::string eventType, QObject* eventTarget);
 
 void NativeEventWrapInit (JSContext* ctx);
 
@@ -37,7 +38,7 @@ static std::map<std::string, wrapFunc> WrapEventDict {
     { "textChange", &WrapTextChangeEvent }
 };
 
-#define WRAPPED_EVENT_METHODS                                                                                                      \
+#define WRAPPED_EVENT_METHODS                                                                                                           \
     static JSValue NativeEventStopPropagation(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                    \
         EVENT_REF* ref = (EVENT_REF*)JS_GetOpaque3(this_val);                                                                           \
         if (ref) {                                                                                                                      \
@@ -48,4 +49,4 @@ static std::map<std::string, wrapFunc> WrapEventDict {
                                                                                                                                         \
 
 #define WRAPPED_EVENT_METHODS_REGISTER                                                                                                  \
-    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),                                                                    \
+    SJS_CFUNC_DEF("stopPropagation", 0, NativeEventStopPropagation),                                                                    

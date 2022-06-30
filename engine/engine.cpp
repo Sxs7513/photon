@@ -14,6 +14,7 @@ extern "C" {
 #include <unistd.h>
 
 #include <QApplication>
+#include <QDebug>
 
 #include "engineUtils.hpp"
 
@@ -52,7 +53,7 @@ SJSRuntime* GetSJSInstance () {
 }
 
 void* StartJSRuntime (int argc, char *argv[]) {
-    printf("js vm Start\n");
+    qDebug("JSVM Start");
 
     SJSSetupArgs (argc, argv);
 

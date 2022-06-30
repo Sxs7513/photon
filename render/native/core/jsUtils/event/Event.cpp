@@ -1,6 +1,6 @@
 #include "Event.h"
 
-bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObject* eventTarget) {
+bool FireEventToJS(QEvent* event, QString uid, std::string eventType, QObject* eventTarget) {
     SJSRuntime* qrt;
     JSValue arg[3];
     JSContext* ctx;
@@ -11,7 +11,10 @@ bool FireEventToJS(QEvent* event, const char* uid, std::string eventType, QObjec
 
     if (iter != WrapEventDict.end()) {
         wrapFunc func = iter->second;
-        arg[0] = JS_NewString(ctx, uid);
+        QByteArray ba = uid.toLocal8Bit();
+        char* uidstr = ba.data();
+
+        arg[0] = JS_NewStringLen(ctx, uidstr, ba.size());
         arg[1] = JS_NewString(ctx, eventType.data());
         arg[2] = func(event, eventTarget);
 
