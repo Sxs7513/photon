@@ -9,6 +9,7 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QScrollBar>
+#include <QFrame>
 
 #include <stdlib.h>
 

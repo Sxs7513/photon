@@ -8,7 +8,6 @@ export default function List ({ data }) {
             width
         }
     })
-
     // if (!list.length) return null;
     return (
         <ScrollView style={style.scrollView} horizontal={false} vertical={true}>
@@ -16,7 +15,6 @@ export default function List ({ data }) {
                 {
                     list.map((item, i) => {
                         return <Image style={[style.image, { width: `${item.width}px` }]} src={item.url} />
-                        // return <Text key={i} style={style.image}>2222222{i}</Text>
                     })
                 }
             </View>
@@ -35,10 +33,11 @@ const style = StyleSheet.create({
         'justify-content': 'space-around',
         'width': '500px',
         'height': '100%',
+        'background-color': '#323234',
     },
     scrollView: {
-        'background-color': '#323234',
         'width': '500px',
-        'height': '400px',
+        'flex': '1',
+        'background-color': '#323234',
     }
 })

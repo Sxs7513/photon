@@ -21,7 +21,6 @@ const reducer = (state, action) => {
 
 function App () {
     const [state, dispatch] = useReducer(reducer, initialState);
-
     return  (
         <Container 
             minSize={minSize}
@@ -33,7 +32,7 @@ function App () {
                 <SearchBar 
                     onChange={(data) => dispatch({ type: 'list', value: data })}
                 />
-                {/* <List data={state.list} /> */}
+                <List data={state.list} />
             </View>
         </Container>
     );
@@ -42,7 +41,8 @@ function App () {
 const style = StyleSheet.create({
     wrapper: {
         'background-color': '#323234',
-        'flex': 1
+        'flex': 1,
+        'flex-direction': 'column'
     }
 })
 

@@ -18,4 +18,6 @@ class EventWidget {
     bool isEventRegist(std::string eventType);
 
     bool event(QEvent* event, QString uid, std::string eventType, QObject* eventTarget);
+
+    ~EventWidget();
 };

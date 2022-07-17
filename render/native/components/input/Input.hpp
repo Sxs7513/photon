@@ -18,4 +18,6 @@ class SInput : public QLineEdit , public CoreWidget {
     SInput(QWidget *parentWidget = nullptr);
 
     void connectSignal();
+
+    bool event(QEvent *e) override;
 };

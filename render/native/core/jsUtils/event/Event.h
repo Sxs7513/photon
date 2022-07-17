@@ -31,11 +31,17 @@ void NativeTextChangeEventWrapInit (JSContext* ctx);
 
 JSValue WrapTextChangeEvent (QEvent* e = nullptr, QObject* eventTarget = nullptr);
 
+JSValue WrapFocusEvent (QEvent* e, QObject* eventTarget);
+
+void NativeFocusEventWrapInit (JSContext* ctx);
+
 typedef JSValue (*wrapFunc)(QEvent* e, QObject* eventTarget);
 
 static std::map<std::string, wrapFunc> WrapEventDict {
     { "click", &WrapClickEvent },
-    { "textChange", &WrapTextChangeEvent }
+    { "textChange", &WrapTextChangeEvent },
+    { "focus", nullptr },
+    { "blur", nullptr },
 };
 
 #define WRAPPED_EVENT_METHODS                                                                                                           \

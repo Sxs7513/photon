@@ -69,10 +69,9 @@ void* StartJSRuntime (int argc, char *argv[]) {
 
     NativeRenderInit(qrt->ctx);
 
-    char* path = (char*)malloc(PATH_MAX);
+    char path[PATH_MAX];
     GetBundlePath(path);
     SJSBootStrapGlobals(qrt->ctx, path);
-    free(path);
 
     // signal(SIGSEGV, FreeJSRuntime);
     signal(SIGINT, FreeJSRuntime);

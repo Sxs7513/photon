@@ -1385,7 +1385,7 @@ var require_react_development = __commonJS({
           }
           return dispatcher.useContext(Context, unstable_observedBits);
         }
-        function useState(initialState2) {
+        function useState2(initialState2) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useState(initialState2);
         }
@@ -1676,7 +1676,7 @@ var require_react_development = __commonJS({
         exports.useMemo = useMemo;
         exports.useReducer = useReducer2;
         exports.useRef = useRef2;
-        exports.useState = useState;
+        exports.useState = useState2;
         exports.version = ReactVersion;
       })();
     }
@@ -18140,7 +18140,7 @@ function registerComponent(config) {
   return config.tagName;
 }
 function setStyle(comp, obj) {
-  const styleObj = Array.isArray(obj) ? Object.assign(...obj) : obj;
+  const styleObj = Array.isArray(obj) ? Object.assign({}, ...obj.filter(Boolean)) : obj;
   let str = StyleSheet.transform(styleObj);
   str = `#${comp.uid} {${str}}`;
   comp.setStyle(str);
@@ -18164,6 +18164,36 @@ function handleOnTextChange(comp, fn) {
     } else {
       unRegistEvent(comp.uid, "textChange");
       comp.removeEventListener("textChange");
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+function handleOnFocus(comp, fn) {
+  if (typeof fn !== "function")
+    return;
+  try {
+    if (fn) {
+      registEvent(comp.uid, "focus", fn);
+      comp.addEventListener("focus");
+    } else {
+      unRegistEvent(comp.uid, "focus");
+      comp.removeEventListener("focus");
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+function handleOnBlur(comp, fn) {
+  if (typeof fn !== "function")
+    return;
+  try {
+    if (fn) {
+      registEvent(comp.uid, "blur", fn);
+      comp.addEventListener("blur");
+    } else {
+      unRegistEvent(comp.uid, "blur");
+      comp.removeEventListener("blur");
     }
   } catch (e) {
     console.log(e);
@@ -18636,6 +18666,12 @@ function setInputProps(comp, newProps, oldProps) {
     },
     set onChange(fn) {
       handleOnTextChange(comp, fn);
+    },
+    set onFocus(fn) {
+      handleOnFocus(comp, fn);
+    },
+    set onBlur(fn) {
+      handleOnBlur(comp, fn);
     }
   };
   Object.assign(setter, newProps);
@@ -19104,37 +19140,49 @@ var import_react = __toESM(require_react());
 var GIPHY_API_KEY = "CwOJl2PRaXe9fnV2xHxRoCbP8gOM3erY";
 function SearchBar({ onChange }) {
   const input = (0, import_react.useRef)(null);
+  const [isFocus, setFocus] = (0, import_react.useState)(false);
   const search = (0, import_react.useCallback)(async (searchTerm) => {
-    let url = "https://api.giphy.com/v1/gifs/search?";
-    const obj = {
-      api_key: GIPHY_API_KEY,
-      limit: 30,
-      q: searchTerm,
-      lang: "en",
-      offset: 0,
-      rating: "pg-13"
-    };
-    Object.keys(obj).forEach((key) => {
-      url += `${key}=${obj[key]}&`;
-    });
-    url = url.substring(0, url.length - 2);
-    const res = await fetch(url, {
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-      }
-    });
-    return res.json();
-  }, []);
-  (0, import_react.useEffect)(() => {
+    try {
+      let url = "https://api.giphy.com/v1/gifs/search?";
+      const obj = {
+        api_key: GIPHY_API_KEY,
+        limit: 30,
+        q: searchTerm,
+        lang: "en",
+        offset: 0,
+        rating: "pg-13"
+      };
+      Object.keys(obj).forEach((key) => {
+        url += `${key}=${obj[key]}&`;
+      });
+      url = url.substring(0, url.length - 2);
+      xh.showLoading();
+      const res = await fetch(url, {
+        headers: {
+          "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+        }
+      });
+      const data = await res.json();
+      onChange(data.data || []);
+    } finally {
+      xh.hideLoading();
+    }
   }, []);
   return /* @__PURE__ */ React.createElement(View, {
     style: style.wrapper
   }, /* @__PURE__ */ React.createElement(Input, {
     ref: input,
-    style: style.input,
-    onChange: (e) => console.log(e)
+    style: [style.input, isFocus ? style.focus : null],
+    onChange: (e) => {
+    },
+    onFocus: () => {
+      setFocus(true);
+    },
+    onBlur: () => {
+      setFocus(false);
+    }
   }), /* @__PURE__ */ React.createElement(Button, {
-    onClick: () => console.log(input.current.text),
+    onClick: () => search(input.current.text),
     style: style.button,
     text: " \u{1F50E} "
   }));
@@ -19154,10 +19202,34 @@ var style = StyleSheet.create({
     "margin-left": "5px",
     "width": "50px",
     "height": "30px"
+  },
+  focus: {
+    "border": "4px solid #4b6cd5"
   }
 });
 
 // test/memesearchapp/components/list/index.jsx
+function List({ data }) {
+  const list = data.map((item) => {
+    const { url, width } = item.images.fixed_width_small;
+    return {
+      url,
+      width
+    };
+  });
+  return /* @__PURE__ */ React.createElement(ScrollView2, {
+    style: style2.scrollView,
+    horizontal: false,
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(View, {
+    style: style2.wrapper
+  }, list.map((item, i) => {
+    return /* @__PURE__ */ React.createElement(Image, {
+      style: [style2.image, { width: `${item.width}px` }],
+      src: item.url
+    });
+  })));
+}
 var style2 = StyleSheet.create({
   image: {
     width: "100px",
@@ -19168,12 +19240,13 @@ var style2 = StyleSheet.create({
     "flex-wrap": "wrap",
     "justify-content": "space-around",
     "width": "500px",
-    "height": "100%"
+    "height": "100%",
+    "background-color": "#323234"
   },
   scrollView: {
-    "background-color": "#323234",
     "width": "500px",
-    "height": "400px"
+    "flex": "1",
+    "background-color": "#323234"
   }
 });
 
@@ -19200,12 +19273,15 @@ function App() {
     style: style3.wrapper
   }, /* @__PURE__ */ React.createElement(SearchBar, {
     onChange: (data) => dispatch({ type: "list", value: data })
+  }), /* @__PURE__ */ React.createElement(List, {
+    data: state.list
   })));
 }
 var style3 = StyleSheet.create({
   wrapper: {
     "background-color": "#323234",
-    "flex": 1
+    "flex": 1,
+    "flex-direction": "column"
   }
 });
 Renderer.render(/* @__PURE__ */ React.createElement(App, null));

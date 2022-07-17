@@ -12,3 +12,22 @@ void SInput::connectSignal () {
         }
     });
 };
+
+static std::map<QEvent::Type, std::string> supportEvents {
+  { QEvent::FocusIn, "focus" },
+  { QEvent::FocusOut, "blur" },
+};
+
+bool SInput::event(QEvent *e) {
+    std::map<QEvent::Type, std::string>::iterator iter;
+
+    if ((iter = supportEvents.find(e->type())) != supportEvents.end()) {
+        if (this->EventWidget::isEventRegist(iter->second)) {
+            if (this->EventWidget::event(e, this->objectName(), iter->second, (QObject*)this)) {
+                return true;
+            }
+        }
+    }
+
+    return this->QWidget::event(e);
+}

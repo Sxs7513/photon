@@ -18,3 +18,6 @@ bool EventWidget::isEventRegist(std::string eventType) {
 bool EventWidget::event(QEvent* event, QString uid, std::string eventType, QObject* eventTarget) {
     return FireEventToJS(event, uid, eventType, eventTarget);
 };
+
+EventWidget::~EventWidget () {
+};

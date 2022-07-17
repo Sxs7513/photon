@@ -35,6 +35,7 @@ add_library(render SHARED
     ./native/core/JSUtils/Event/Event.cpp
     ./native/core/JSUtils/Event/Click/Click.cpp
     ./native/core/JSUtils/Event/Input/TextChange/TextChange.cpp
+    ./native/core/JSUtils/Event/Input/Focus/Focus.cpp
     ./native/core/JSUtils/variant/VariantWrap.cpp
     ./native/core/JSUtils/variant/VariantWrap.hpp
 

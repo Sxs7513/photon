@@ -39,10 +39,9 @@ export function registerComponents(
 }
 
 export function setStyle (comp, obj) {
-    const styleObj = Array.isArray(obj) ? Object.assign(...obj) : obj
+    const styleObj = Array.isArray(obj) ? Object.assign({}, ...obj.filter(Boolean)) : obj
     let str = StyleSheet.transform(styleObj)
     str = `#${comp.uid} {${str}}`
-
     comp.setStyle(str)
 }
 
@@ -65,6 +64,36 @@ export function handleOnTextChange (comp, fn) {
         } else {
             unRegistEvent(comp.uid, 'textChange')
             comp.removeEventListener('textChange')
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export function handleOnFocus (comp, fn) {
+    if (typeof fn !== 'function') return;
+    try {
+        if (fn) {
+            registEvent(comp.uid, 'focus', fn)
+            comp.addEventListener('focus')
+        } else {
+            unRegistEvent(comp.uid, 'focus')
+            comp.removeEventListener('focus')
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export function handleOnBlur (comp, fn) {
+    if (typeof fn !== 'function') return;
+    try {
+        if (fn) {
+            registEvent(comp.uid, 'blur', fn)
+            comp.addEventListener('blur')
+        } else {
+            unRegistEvent(comp.uid, 'blur')
+            comp.removeEventListener('blur')
         }
     } catch (e) {
         console.log(e)

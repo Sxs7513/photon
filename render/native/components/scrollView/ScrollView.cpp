@@ -4,6 +4,7 @@ SScrollArea::SScrollArea(QWidget *parentWidget): QScrollArea(parentWidget) {
     flexutils::configureFlexNode(this, this->getFlexNode(), false);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setFrameShape(QFrame::NoFrame);
 
     if (this->root == nullptr) {
         // this->root = new SWidget;

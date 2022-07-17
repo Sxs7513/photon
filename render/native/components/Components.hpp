@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <string.h>
 
 extern "C" {
     #include "quickjs-libc.h"
@@ -101,10 +102,12 @@ void NativeComponentInputInit (JSContext* ctx, JSValue ns);
             COMP_REF* s = (COMP_REF*)JS_GetOpaque3(this_val);                                                               \
             size_t len;                                                                                                     \
             const char* eventType = JS_ToCStringLen(ctx, &len, argv[0]);                                                    \
-            char* copy = (char*)malloc(len);                                                                                \
-            strcpy(copy, eventType);                                                                                        \
-            ((COMPONENT*)(s->comp))->addEventListener(copy);                                                                \
-        }                                                                                                                   \    
+            std::string str(eventType, 0, len);                                                                             \
+            ((COMPONENT*)(s->comp))->addEventListener(str);                                                                 \
+            JS_FreeCString(ctx, eventType);                                                                                 \
+            return JS_NewBool(ctx, 1);                                                                                           \
+        }                                                                                                                   \
+        return JS_NewBool(ctx, 0);                                                                                               \    
     }                                                                                                                       \
                                                                                                                             \
     static JSValue NativeCompProperty(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {                \

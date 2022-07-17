@@ -1,4 +1,4 @@
-import { getUid, setStyle, handleOnTextChange } from '../config'
+import { getUid, setStyle, handleOnTextChange,handleOnFocus, handleOnBlur } from '../config'
 
 const bridge = globalThis.SJSJSBridge;
 const NativeInput = bridge.NativeRender.NativeComponents.Input
@@ -10,6 +10,12 @@ function setInputProps(comp, newProps, oldProps) {
         },
         set onChange (fn) {
             handleOnTextChange(comp, fn);
+        },
+        set onFocus (fn) {
+            handleOnFocus(comp, fn);
+        },
+        set onBlur (fn) {
+            handleOnBlur(comp, fn);
         }
     }
     Object.assign(setter, newProps);
